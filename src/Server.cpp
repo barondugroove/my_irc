@@ -6,21 +6,23 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:06 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/08/28 19:50:43 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/08/29 15:32:33 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
-#include "Client.cpp"
 #include <iostream>
 #include <unistd.h>
 #include <limits>
 #include <cstdlib>
+#include <fcntl.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <cstring>
 #include <sys/epoll.h>
 #include <iterator>
+#include <sstream>
+#include <algorithm>
 
 const char* Server::PortNotNumberException::what() const throw() {
 	return ("Port is not a number.");
@@ -84,7 +86,6 @@ void Server::clientAuth(Client &unauthClient, char *msg) {
 		}
 		else
 			errorMessage(unauthClient.getUserFd(), "Error. Password is wrong, please try again : ");
-
 	}
 	else if (unauthClient.password && !unauthClient.named)
 	{
@@ -107,11 +108,19 @@ void Server::clientAuth(Client &unauthClient, char *msg) {
 }
 
 void Server::handleClientMsg(Client &client, char *msg) {
-	std::string test = msg;
-	test.erase(test.size() - 1);
-
+	std::stringstream	message(msg);
+	std::string			cmd;
+	std::string			args;
+	message >> cmd;
+	message >> args;
+	(void)client;
+/*
+	if (cmd == "/join" && !args.empty()) {
+		channels.insert(std::pair<std::string, Channel>(args, Channel(args, client)));
+	}
 	std::cout << "Client " << client.getNickname() << " (" << client.getUsername() << ") fd[" << client.getUserFd() << "] : " << msg;
-	return ;
+	std::cout << cmd << std::endl;
+*/	return ;
 }
 
 void Server::run(int serverFd)
@@ -128,7 +137,7 @@ void Server::run(int serverFd)
 	if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, serverFd, &serverEvents) == -1)
 		throw Server::EpollControlException();
 
-	while (1)
+	while (1) // PLACER UN BOOLEAN A FALSE POUR ARRETER LA BOUCLE ET GERER LE CTRL C
 	{
 		// CREATING CLIENTS EPOLL EVENT STRUCT
 		struct epoll_event clientsEvents[50];
@@ -159,6 +168,7 @@ void Server::run(int serverFd)
 				int clientFd = accept(serverFd, (struct sockaddr *)&clientAddr, &addrlen);
 				if (clientFd < 0)
 					throw Server::AcceptException();
+				fcntl(clientFd, F_SETFL, O_NONBLOCK); // A VERIFIER
 
 				// ADD CLIENT FD TO EPOLL
 				serverEvents.data.fd = clientFd;
@@ -181,7 +191,7 @@ void Server::run(int serverFd)
 				int bytes_received = recv(fd, msg, sizeof(msg), 0);
 
 				// REMOVE CLIENT
-				if (bytes_received <= 0)
+				if (bytes_received <= 0) // == 0 = DISCONECTED // < 0 ERROR
 				{
 					std::cout << "Client disconnected" << std::endl;
 					if (epoll_ctl(epoll_fd, EPOLL_CTL_DEL, fd, NULL) == -1)

@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:15 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/08/28 19:49:51 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/08/29 15:30:36 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,10 @@
 
 #include <string>
 #include <list>
+#include <map>
+#include <algorithm>
 #include "Client.hpp"
+#include "Channel.hpp"
 
 class Server{
 
@@ -67,9 +70,9 @@ class Server{
 		Server();											//Default Constructor
 		~Server();											//Destructor
 
-
 		//Consts
 		std::list<Client> clientsList;
+		std::map<std::string, Channel> channels;
 		std::string password;
 		unsigned short port;
 

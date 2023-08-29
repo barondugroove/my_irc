@@ -12,7 +12,6 @@
 
 #include "Client.hpp"
 #include <iostream>
-#include <cmath>
 
 const char* Client::GradeTooHighException::what() const throw() {
 	return ("Client grade is too high.");
@@ -35,13 +34,14 @@ Client::~Client(void) {
 	return;
 }
 
-std::string & Client::getNickname() {
+std::string &Client::getNickname() {
 	return _nickname;
 }
 
-std::string	& Client::getUsername() {
+std::string &Client::getUsername() {
 	return _username;
 }
+
 const int & Client::getUserFd() const {
 	return _fd;
 }

@@ -27,8 +27,8 @@ class Client{
 						virtual const char* what() const throw();
 		};
 
-		Client(int clientFd);						//Constructor
-		~Client();						//Destructor
+		Client(int clientFd);	//Constructor
+		~Client();				//Destructor
 
 		void Authentify(std::string name);
 
