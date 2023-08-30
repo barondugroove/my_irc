@@ -17,17 +17,9 @@
 
 class Client{
 	public:
-
-		class GradeTooHighException : public std::exception {
-					public :
-						virtual const char* what() const throw();
-		};
-		class GradeTooLowException : public std::exception {
-					public :
-						virtual const char* what() const throw();
-		};
-
 		Client(int clientFd);	//Constructor
+		Client(const Client &src); //Copy Constructor
+		Client & operator=(const Client &rhs); //Assignement Value Operator
 		~Client();				//Destructor
 
 		void Authentify(std::string name);

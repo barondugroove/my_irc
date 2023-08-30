@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:06 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/08/30 02:22:20 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/08/30 16:20:43 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,9 @@
 #include <iterator>
 #include <sstream>
 #include <algorithm>
+#include <csignal>
+
+bool running = true;
 
 const char* Server::PortNotNumberException::what() const throw() {
 	return ("Port is not a number.");
@@ -55,6 +58,11 @@ const char* Server::EpollWaitException::what() const throw() {
 
 const char* Server::EpollControlException::what() const throw() {
 	return ("Error on epoll control.");
+}
+
+void	exitProgram(int signal) {
+	if (signal == SIGINT)
+		running = false;
 }
 
 bool checkNickname(std::string &test) {
@@ -127,8 +135,8 @@ void Server::cmdJoin(Client &client, std::stringstream &msg) {
 		}
 		else {
 			std::cout << "New channel " << args << " created." << std::endl;
-			Channel	*newChannel = new Channel(args, client);
-			channels.insert(std::pair<std::string, Channel*>(args, newChannel));
+			Channel	newChannel(args, client);
+			channels.insert(std::pair<std::string, Channel*>(args, &newChannel));
 			std::map<std::string, Channel*>::iterator it = channels.find(args);
 			it->second->addUser(client.getNickname(), client);
 			it->second->setOperator(client.getNickname());
@@ -155,9 +163,9 @@ void Server::cmdPrivMsg(Client &client, std::stringstream &msg) {
 			sendMessage(client.getUserFd(), "Cannot send message to channel " + args + '\n');
 	}
 	else {
-		std::map<std::string, Client*>::iterator it = clientsList.find(args);
+		std::map<std::string, Client>::iterator it = clientsList.find(args);
 		if (it != clientsList.end()) {
-			sendMessage(it->second->getUserFd(), text);
+			sendMessage(it->second.getUserFd(), text);
 		}
 		else
 			sendMessage(client.getUserFd(), "Cannot send message to user " + args + '\n');
@@ -189,15 +197,12 @@ void Server::handleClientMsg(Client &client, char *msg) {
 	std::string			cmd;
 
 	message >> cmd;
-
-	if (cmd[0] == '/') {
+	if (cmd[0] == '/')
 		cmd.erase(cmd.begin());
-		std::map<std::string, void(Server::*)(Client&, std::stringstream &msg)>::iterator it = script_map.find(cmd);
-		if (it != script_map.end())
-			(this->*(it->second))(client, message);
-		else
-			send(client.getUserFd(), "Command unknown.\n", 17, 0);
-	}
+
+	std::map<std::string, void(Server::*)(Client&, std::stringstream &msg)>::iterator it = commandsChannels.find(cmd);
+	if (it != commandsChannels.end())
+		(this->*(it->second))(client, message);
 	else
 		std::cout << "Client " << client.getNickname() << " (" << client.getUsername() << ") fd[" << client.getUserFd() << "] : " << msg;
 	return ;
@@ -213,11 +218,12 @@ void Server::run(int serverFd)
 	// ADDING SERVER FD TO EPOLL
 	struct epoll_event serverEvents;
 	serverEvents.data.fd = serverFd;
-	serverEvents.events = EPOLLIN;
+	serverEvents.events = EPOLLIN | EPOLLOUT | EPOLLRDHUP;
 	if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, serverFd, &serverEvents) == -1)
 		throw Server::EpollControlException();
 
-	while (1) // PLACER UN BOOLEAN A FALSE POUR ARRETER LA BOUCLE ET GERER LE CTRL C
+	signal(SIGINT, exitProgram);
+	while (running) // PLACER UN BOOLEAN A FALSE POUR ARRETER LA BOUCLE ET GERER LE CTRL C
 	{
 		// CREATING CLIENTS EPOLL EVENT STRUCT
 		struct epoll_event clientsEvents[50];
@@ -231,10 +237,10 @@ void Server::run(int serverFd)
 			int fd = clientsEvents[i].data.fd;
 
 			// SETTING ITERATOR
-			std::map<std::string, Client*>::iterator it = this->clientsList.begin();
+			std::map<std::string, Client>::iterator it = this->clientsList.begin();
 			while (it != this->clientsList.end())
 			{
-				if (it->second->getUserFd() == fd)
+				if (it->second.getUserFd() == fd)
 					break;
 				it++;
 			}
@@ -248,7 +254,7 @@ void Server::run(int serverFd)
 				int clientFd = accept(serverFd, (struct sockaddr *)&clientAddr, &addrlen);
 				if (clientFd < 0)
 					throw Server::AcceptException();
-				fcntl(clientFd, F_SETFL, O_NONBLOCK); // A VERIFIER
+				//fcntl(clientFd, F_SETFL, O_NONBLOCK); // A VERIFIER
 
 				// ADD CLIENT FD TO EPOLL
 				serverEvents.data.fd = clientFd;
@@ -257,9 +263,12 @@ void Server::run(int serverFd)
 					throw Server::EpollControlException();
 
 				// CREATE CLIENT OBJECT AND ADD TO LIST
-				Client *newClient = new Client(clientFd);
-				this->clientsList.insert(std::pair<std::string, Client*>("", newClient));
-
+				Client newClient(clientFd);
+				static int i = 0;
+				i++;
+				std::cout << "pass i : " << i << std::endl;
+			//	send(4, "LOLOLOL", 7, 0);
+				this->clientsList.insert(std::pair<std::string, Client>("", newClient));
 				send(clientFd, "Please enter the password : ", 28, 0);
 
 				std::cout << "New client connected" << std::endl;
@@ -279,10 +288,10 @@ void Server::run(int serverFd)
 					close(fd);
 					this->clientsList.erase(it++); // WEIRD IT++
 				}
-				else if (!it->second->authentified)
-					clientAuth(*(it->second), msg);
+				else if (!it->second.authentified)
+					clientAuth((it->second), msg);
 				else
-					handleClientMsg(*(it->second), msg);
+					handleClientMsg((it->second), msg);
 			}
 		}
 	}
@@ -326,9 +335,9 @@ Server::Server(unsigned short port, std::string password) : _port(port), _passwo
 	if (listen(serverFd, serverAddr.sin_port) < 0)
 		throw Server::CantListenOnPortException();
 
-	script_map.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("JOIN", &Server::cmdJoin));
-	script_map.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("PART", &Server::cmdPart));
-	script_map.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("PRIVMSG", &Server::cmdPrivMsg));
+	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("JOIN", &Server::cmdJoin));
+	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("PART", &Server::cmdPart));
+	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("PRIVMSG", &Server::cmdPrivMsg));
 
 	std::cout << std::endl << "All good!" << std::endl << "port    : " << _port << std::endl << "password: " << _password << std::endl;
 	run(serverFd);

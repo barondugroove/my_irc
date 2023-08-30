@@ -16,12 +16,31 @@
 
 Channel::Channel(std::string name, Client &channelCreator) : _channelName(name) {
 	std::cout<< "Channel Constructor called"<< std::endl;
-	_operator = channelCreator.getNickname();
+	_operator.push_back(channelCreator.getNickname());
 	_inviteMode = false;
 	_topicMode = false;
 	_passwordMode = false;
 	_userLimit = -1;
 	return;
+}
+
+Channel::Channel(const Channel &src) {
+	*this = src;
+}
+
+Channel & Channel::operator=(const Channel &rhs) {
+	if (this != &rhs) {
+		this->_channelName = rhs._channelName;
+		this->_members = rhs._members;
+		this->_operator = rhs._operator;
+		this->_password = rhs._password;
+		
+		this->_inviteMode = rhs._inviteMode;
+		this->_topicMode = rhs._topicMode;
+		this->_passwordMode = rhs._passwordMode;
+		this->_userLimit = rhs._userLimit;
+	}
+	return *this;
 }
 
 Channel::~Channel(void) {
@@ -69,5 +88,5 @@ void	Channel::addUser(std::string &nickName, Client &client) {
 }
 
 void	Channel::setOperator(std::string &nickname) {
-	_operator = nickname;
+	_operator.push_back(nickname);
 }

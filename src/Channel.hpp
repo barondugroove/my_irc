@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/29 14:26:42 by bchabot           #+#    #+#             */
-/*   Updated: 2023/08/30 01:10:14 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/08/30 15:51:43 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,15 @@
 #include "Client.hpp"
 #include <string>
 #include <map>
+#include <vector>
 #include <sys/types.h>
 #include <sys/socket.h>
 
 class Channel {
 	public:
 		Channel(std::string name, Client &channelCreator);		//Constructor
+		Channel(const Channel &src); //Copy Constructor
+		Channel & operator=(const Channel &rhs); //Assignement Value Operator
 		~Channel();												//Destructor
 
 		std::string getChannelName() const;
@@ -38,12 +41,12 @@ class Channel {
 		std::string _channelName;
 		std::map<std::string, Client*> _members;
 
-		std::string		_operator;
-		std::string		_password;
-		bool			_inviteMode;
-		bool			_topicMode;
-		bool			_passwordMode;
-		unsigned int	_userLimit;
+		std::vector<std::string>	_operator;
+		std::string					_password;
+		bool						_inviteMode;
+		bool						_topicMode;
+		bool						_passwordMode;
+		unsigned int				_userLimit;
 };
 
 #endif

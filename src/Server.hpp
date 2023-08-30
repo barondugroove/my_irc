@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:15 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/08/30 02:12:34 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/08/30 16:11:10 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,10 +82,11 @@ class Server{
 
 	private :
 		//Consts
-		std::map<std::string, void(Server::*)(Client&,std::stringstream &msg)> script_map;
+		std::map<std::string, void(Server::*)(Client&,std::stringstream &msg)> commandsChannels;
+		std::map<std::string, void(Server::*)(Client&,std::stringstream &msg)> commandsAuth;
 		unsigned short	_port;
 		const std::string _password;
-		std::map<std::string, Client*> clientsList;
+		std::map<std::string, Client> clientsList;
 		std::map<std::string, Channel*> channels;
 };
 

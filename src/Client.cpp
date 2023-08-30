@@ -13,20 +13,27 @@
 #include "Client.hpp"
 #include <iostream>
 
-const char* Client::GradeTooHighException::what() const throw() {
-	return ("Client grade is too high.");
-}
-
-const char* Client::GradeTooLowException::what() const throw() {
-	return ("Client grade is too low.");
-}
-
 Client::Client(int clientFD) : _fd(clientFD) {
 	std::cout<< "Client Constructor called"<< std::endl;
 	this->password = false;
 	this->named = false;
 	this->authentified = false;
 	return;
+}
+
+Client::Client(const Client &src) : _fd(src.getUserFd()) {
+	*this = src;
+}
+
+Client & Client::operator=(const Client &rhs) {
+	if (this != &rhs) {
+		this->password = rhs.password;
+		this->named = rhs.named;
+		this->authentified = rhs.authentified;
+		this->_nickname = rhs._nickname;
+		this->_username = rhs._username;
+	}
+	return *this;
 }
 
 Client::~Client(void) {
