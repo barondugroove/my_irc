@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:15 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/08/29 15:30:36 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/08/30 02:12:34 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,21 +66,27 @@ class Server{
 		};
 
 		//Constructors
-		Server(const char *port, const char *password);		//Constructor
+		Server(unsigned short port, std::string password);	//Constructor
 		Server();											//Default Constructor
 		~Server();											//Destructor
 
-		//Consts
-		std::list<Client> clientsList;
-		std::map<std::string, Channel> channels;
-		std::string password;
-		unsigned short port;
-
-
 		//Functions
-		void run(int serverFd);
-		void clientAuth(Client &unauthClient, char *msg);
-		void handleClientMsg(Client &Client, char *msg);
+		void			run(int serverFd);
+		void			clientAuth(Client &unauthClient, char *msg);
+		void			handleClientMsg(Client &Client, char *msg);
+		static int		checkPort(const char *portStr);
+		void			cmdJoin(Client &client, std::stringstream &msg);
+		void			cmdPart(Client &client, std::stringstream &msg);
+		void			cmdPrivMsg(Client &client, std::stringstream &msg);
+		void			eraseChannel(std::map<std::string, Channel*>::iterator it);
+
+	private :
+		//Consts
+		std::map<std::string, void(Server::*)(Client&,std::stringstream &msg)> script_map;
+		unsigned short	_port;
+		const std::string _password;
+		std::map<std::string, Client*> clientsList;
+		std::map<std::string, Channel*> channels;
 };
 
 #endif

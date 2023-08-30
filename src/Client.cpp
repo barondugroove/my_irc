@@ -34,11 +34,11 @@ Client::~Client(void) {
 	return;
 }
 
-std::string &Client::getNickname() {
+std::string & Client::getNickname() {
 	return _nickname;
 }
 
-std::string &Client::getUsername() {
+std::string & Client::getUsername() {
 	return _username;
 }
 
