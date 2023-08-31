@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:15 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/08/30 16:11:10 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/08/31 17:00:44 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <list>
 #include <map>
 #include <algorithm>
+#include <sys/epoll.h>
 #include "Client.hpp"
 #include "Channel.hpp"
 
@@ -72,6 +73,9 @@ class Server{
 
 		//Functions
 		void			run(int serverFd);
+		void			initEpoll(struct epoll_event &serverEvents);
+		void			connectClient(struct epoll_event &serverEvents);
+		void			liaiseClient(Client &client, int fd);
 		void			clientAuth(Client &unauthClient, char *msg);
 		void			handleClientMsg(Client &Client, char *msg);
 		static int		checkPort(const char *portStr);
@@ -81,13 +85,16 @@ class Server{
 		void			eraseChannel(std::map<std::string, Channel*>::iterator it);
 
 	private :
-		//Consts
-		std::map<std::string, void(Server::*)(Client&,std::stringstream &msg)> commandsChannels;
-		std::map<std::string, void(Server::*)(Client&,std::stringstream &msg)> commandsAuth;
-		unsigned short	_port;
-		const std::string _password;
+		unsigned short		_port;
+		const std::string	_password;
+		int					_epoll_fd;
+		int					_serverSocket;
+
 		std::map<std::string, Client> clientsList;
 		std::map<std::string, Channel*> channels;
+
+		std::map<std::string, void(Server::*)(Client&,std::stringstream &msg)> commandsChannels;
+		std::map<std::string, void(Server::*)(Client&,std::stringstream &msg)> commandsAuth;
 };
 
 #endif

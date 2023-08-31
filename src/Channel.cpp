@@ -34,7 +34,7 @@ Channel & Channel::operator=(const Channel &rhs) {
 		this->_members = rhs._members;
 		this->_operator = rhs._operator;
 		this->_password = rhs._password;
-		
+
 		this->_inviteMode = rhs._inviteMode;
 		this->_topicMode = rhs._topicMode;
 		this->_passwordMode = rhs._passwordMode;

@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:06 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/08/30 16:20:43 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/08/31 17:31:03 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,7 @@ void Server::clientAuth(Client &unauthClient, char *msg) {
 
 void Server::cmdJoin(Client &client, std::stringstream &msg) {
 	std::string			args;
-	
+
 	msg.ignore(512, ' ');
 	msg >> args;
 
@@ -174,10 +174,10 @@ void Server::cmdPrivMsg(Client &client, std::stringstream &msg) {
 
 void Server::cmdPart(Client &client, std::stringstream &msg) {
 	std::string			args;
-	
+
 	msg.ignore(512, ' ');
 	msg >> args;
-	
+
 	if (!args.empty() && args[0] == '#') {
 		std::map<std::string, Channel*>::iterator it = channels.find(args);
 		if (it != channels.end() && it->second->isUserMember(client.getNickname())) {
@@ -208,29 +208,79 @@ void Server::handleClientMsg(Client &client, char *msg) {
 	return ;
 }
 
-void Server::run(int serverFd)
-{
+void	Server::initEpoll(struct epoll_event &serverEvents) {
 	// CREATE EPOLL FD
-	int epoll_fd = epoll_create1(0);
-	if (epoll_fd == -1)
+	_epoll_fd = epoll_create1(0);
+	if (_epoll_fd == -1)
 		throw Server::EpollCreationException();
 
 	// ADDING SERVER FD TO EPOLL
-	struct epoll_event serverEvents;
-	serverEvents.data.fd = serverFd;
-	serverEvents.events = EPOLLIN | EPOLLOUT | EPOLLRDHUP;
-	if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, serverFd, &serverEvents) == -1)
+	serverEvents.data.fd = _serverSocket;
+	serverEvents.events = EPOLLIN | EPOLLOUT;
+	if (epoll_ctl(_epoll_fd, EPOLL_CTL_ADD, _serverSocket, &serverEvents) == -1)
+		throw Server::EpollControlException();
+}
+
+void	Server::connectClient(struct epoll_event &serverEvents) {
+	// CREATE CLIENT FD
+	struct	sockaddr_in clientAddr;
+
+	socklen_t addrlen = sizeof(clientAddr);
+	int clientFd = accept(_serverSocket, (struct sockaddr *)&clientAddr, &addrlen);
+	if (clientFd < 0)
+		throw Server::AcceptException();
+	fcntl(clientFd, F_SETFL, O_NONBLOCK); // A VERIFIER
+
+	// ADD CLIENT FD TO EPOLL
+	serverEvents.data.fd = clientFd;
+	serverEvents.events = EPOLLIN;
+	if (epoll_ctl(_epoll_fd, EPOLL_CTL_ADD, clientFd, &serverEvents) == -1)
 		throw Server::EpollControlException();
 
+	// CREATE CLIENT OBJECT AND ADD TO LIST
+	Client newClient(clientFd);
+	this->clientsList.insert(std::pair<std::string, Client>("", newClient));
+	send(clientFd, "Please enter the password : ", 28, 0);
+
+	std::cout << "New client connected" << std::endl;
+}
+
+void	Server::liaiseClient(Client &client, int fd) {
+	char msg[512];
+	memset(&msg, 0, sizeof(msg));
+	int bytes_received = recv(fd, msg, sizeof(msg), 0);
+
+	// REMOVE CLIENT
+	if (bytes_received <= 0) // == 0 = DISCONECTED // < 0 ERROR
+	{
+		std::cout << "Client disconnected" << std::endl;
+		if (epoll_ctl(_epoll_fd, EPOLL_CTL_DEL, fd, NULL) == -1)
+			throw Server::EpollControlException();
+		close(fd);
+		this->clientsList.erase(client.getNickname()); // WEIRD IT++
+	}
+	else if (client.authentified)
+		clientAuth(client, msg);
+	else
+		handleClientMsg(client, msg);
+}
+
+void	Server::run(int _serverSocket)
+{
+	struct epoll_event	serverEvents;
+	struct epoll_event	clientsEvents[50];
+
+	initEpoll(serverEvents);
 	signal(SIGINT, exitProgram);
-	while (running) // PLACER UN BOOLEAN A FALSE POUR ARRETER LA BOUCLE ET GERER LE CTRL C
+	while (running)
 	{
 		// CREATING CLIENTS EPOLL EVENT STRUCT
-		struct epoll_event clientsEvents[50];
-		int clientNbr = epoll_wait(epoll_fd, clientsEvents, 50, -1);
-		if (clientNbr == -1)
+		std::cout << "EPOLL WAIT D EZINIZ\n";
+		int clientNbr = epoll_wait(_epoll_fd, clientsEvents, 50, -1);
+		if (clientNbr == -1) {
 			throw Server::EpollWaitException();
-
+		}
+		std::cout << "ITERATE DE ZINZ\n";
 		// ITERATE ON ALL CONNECTED CLIENTS FDS
 		for (int i = 0; i < clientNbr; ++i)
 		{
@@ -244,60 +294,19 @@ void Server::run(int serverFd)
 					break;
 				it++;
 			}
-
-			if (fd == serverFd) // SERVER ACTIONS, NEW CONNECTIONS
-			{
-				// CREATE CLIENT FD
-				struct	sockaddr_in clientAddr;
-				socklen_t addrlen = sizeof(clientAddr);
-
-				int clientFd = accept(serverFd, (struct sockaddr *)&clientAddr, &addrlen);
-				if (clientFd < 0)
-					throw Server::AcceptException();
-				//fcntl(clientFd, F_SETFL, O_NONBLOCK); // A VERIFIER
-
-				// ADD CLIENT FD TO EPOLL
-				serverEvents.data.fd = clientFd;
-				serverEvents.events = EPOLLIN;
-				if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, clientFd, &serverEvents) == -1)
-					throw Server::EpollControlException();
-
-				// CREATE CLIENT OBJECT AND ADD TO LIST
-				Client newClient(clientFd);
-				static int i = 0;
-				i++;
-				std::cout << "pass i : " << i << std::endl;
-			//	send(4, "LOLOLOL", 7, 0);
-				this->clientsList.insert(std::pair<std::string, Client>("", newClient));
-				send(clientFd, "Please enter the password : ", 28, 0);
-
-				std::cout << "New client connected" << std::endl;
+			if (fd == _serverSocket) { // SERVER ACTIONS, NEW CONNECTIONS
+				std::cout << "JE CONNECTE LES CLIENTS\n";
+				connectClient(serverEvents);
 			}
-			else // CLIENT ACTIONS
-			{
-				char msg[512];
-				memset(&msg, 0, sizeof(msg));
-				int bytes_received = recv(fd, msg, sizeof(msg), 0);
-
-				// REMOVE CLIENT
-				if (bytes_received <= 0) // == 0 = DISCONECTED // < 0 ERROR
-				{
-					std::cout << "Client disconnected" << std::endl;
-					if (epoll_ctl(epoll_fd, EPOLL_CTL_DEL, fd, NULL) == -1)
-						throw Server::EpollControlException();
-					close(fd);
-					this->clientsList.erase(it++); // WEIRD IT++
-				}
-				else if (!it->second.authentified)
-					clientAuth((it->second), msg);
-				else
-					handleClientMsg((it->second), msg);
+			else { // CLIENT ACTIONS
+				std::cout << "J:ecoute LES CLIENTS\n";
+				liaiseClient(it->second, fd);
 			}
 		}
 	}
 }
 
-int	Server::checkPort(const char *portStr) 
+int	Server::checkPort(const char *portStr)
 {
 	char* ptr;
 	long int test = strtol(portStr, &ptr, 10);
@@ -315,10 +324,10 @@ int	Server::checkPort(const char *portStr)
 Server::Server(unsigned short port, std::string password) : _port(port), _password(password)
 {
 	// CREATING SOCKET
-	int	serverFd;
+	int	_serverSocket;
 
-	serverFd = socket(AF_INET, SOCK_STREAM, 0);
-	if (serverFd < 0)
+	_serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+	if (_serverSocket < 0)
 		throw Server::SocketErrorException();
 
 	// SETTING SERVER ADDR
@@ -329,10 +338,14 @@ Server::Server(unsigned short port, std::string password) : _port(port), _passwo
 	serverAddr.sin_port = htons(_port);
 
 	// BINDING SOCKET ADDR
-	if (bind(serverFd, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0)
+	if (bind(_serverSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0)
 		throw Server::CantListenOnPortException();
 
-	if (listen(serverFd, serverAddr.sin_port) < 0)
+//	int on = 1;
+ //	if (setsockopt(_serverSocket, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0)
+	//	throw Server::CantListenOnPortException();
+
+	if (listen(_serverSocket, serverAddr.sin_port) < 0)
 		throw Server::CantListenOnPortException();
 
 	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("JOIN", &Server::cmdJoin));
@@ -340,7 +353,7 @@ Server::Server(unsigned short port, std::string password) : _port(port), _passwo
 	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("PRIVMSG", &Server::cmdPrivMsg));
 
 	std::cout << std::endl << "All good!" << std::endl << "port    : " << _port << std::endl << "password: " << _password << std::endl;
-	run(serverFd);
+	run(_serverSocket);
 }
 
 Server::~Server(void) {
