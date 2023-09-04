@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:15 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/08/31 17:00:44 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/04 15:49:23 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ class Server{
 		void			cmdJoin(Client &client, std::stringstream &msg);
 		void			cmdPart(Client &client, std::stringstream &msg);
 		void			cmdPrivMsg(Client &client, std::stringstream &msg);
-		void			eraseChannel(std::map<std::string, Channel*>::iterator it);
+		void			eraseChannel(std::map<std::string, Channel>::iterator it);
 
 	private :
 		unsigned short		_port;
@@ -91,7 +91,7 @@ class Server{
 		int					_serverSocket;
 
 		std::map<std::string, Client> clientsList;
-		std::map<std::string, Channel*> channels;
+		std::map<std::string, Channel> channels;
 
 		std::map<std::string, void(Server::*)(Client&,std::stringstream &msg)> commandsChannels;
 		std::map<std::string, void(Server::*)(Client&,std::stringstream &msg)> commandsAuth;

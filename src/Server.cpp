@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:06 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/08/31 17:31:03 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/04 16:51:51 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,8 +81,8 @@ void sendMessage(const int &fd, std::string msg) {
 	send(fd, msg.c_str(), msg.size(), 0);
 }
 
-void			Server::eraseChannel(std::map<std::string, Channel*>::iterator it) {
-	std::cout << "Channel " << it->second->getChannelName() << " has been closed since it has no more members." << std::endl;
+void	Server::eraseChannel(std::map<std::string, Channel>::iterator it) {
+	std::cout << "Channel " << it->second.getChannelName() << " has been closed since it has no more members." << std::endl;
 	channels.erase(it);
 }
 
@@ -128,18 +128,18 @@ void Server::cmdJoin(Client &client, std::stringstream &msg) {
 	msg >> args;
 
 	if (!args.empty() && args[0] == '#') {
-		std::map<std::string, Channel*>::iterator it = channels.find(args);
+		std::map<std::string, Channel>::iterator it = channels.find(args);
 		if (it != channels.end()) {
 			std::cout << client.getNickname() << " is joining channel " << args << std::endl;
-			it->second->addUser(client.getNickname(), client);
+			it->second.addUser(client.getNickname(), client);
 		}
 		else {
 			std::cout << "New channel " << args << " created." << std::endl;
 			Channel	newChannel(args, client);
-			channels.insert(std::pair<std::string, Channel*>(args, &newChannel));
-			std::map<std::string, Channel*>::iterator it = channels.find(args);
-			it->second->addUser(client.getNickname(), client);
-			it->second->setOperator(client.getNickname());
+			channels.insert(std::pair<std::string, Channel>(args, newChannel));
+			std::map<std::string, Channel>::iterator it = channels.find(args);
+			it->second.addUser(client.getNickname(), client);
+			it->second.setOperator(client.getNickname());
 		}
 	}
 	else
@@ -155,9 +155,9 @@ void Server::cmdPrivMsg(Client &client, std::stringstream &msg) {
 	msg >> text;
 
 	if (!args.empty() && args[0] == '#') {
-		std::map<std::string, Channel*>::iterator it = channels.find(args);
+		std::map<std::string, Channel>::iterator it = channels.find(args);
 		if (it != channels.end()) {
-			it->second->sendMessageToAllMembers(text += '\n');
+			it->second.sendMessageToAllMembers(text += '\n');
 		}
 		else
 			sendMessage(client.getUserFd(), "Cannot send message to channel " + args + '\n');
@@ -179,10 +179,10 @@ void Server::cmdPart(Client &client, std::stringstream &msg) {
 	msg >> args;
 
 	if (!args.empty() && args[0] == '#') {
-		std::map<std::string, Channel*>::iterator it = channels.find(args);
-		if (it != channels.end() && it->second->isUserMember(client.getNickname())) {
-			it->second->eraseUser(client.getNickname());
-			if (it->second->getUserCount() == 0)
+		std::map<std::string, Channel>::iterator it = channels.find(args);
+		if (it != channels.end() && it->second.isUserMember(client.getNickname())) {
+			it->second.eraseUser(client.getNickname());
+			if (it->second.getUserCount() == 0)
 				eraseChannel(it);
 		}
 		else
@@ -196,15 +196,19 @@ void Server::handleClientMsg(Client &client, char *msg) {
 	std::stringstream	message(msg);
 	std::string			cmd;
 
-	message >> cmd;
-	if (cmd[0] == '/')
-		cmd.erase(cmd.begin());
+	if (!client.authentified)
+		clientAuth(client, msg);
+	else {
+		message >> cmd;
+		if (cmd[0] == '/')
+			cmd.erase(cmd.begin());
 
-	std::map<std::string, void(Server::*)(Client&, std::stringstream &msg)>::iterator it = commandsChannels.find(cmd);
-	if (it != commandsChannels.end())
-		(this->*(it->second))(client, message);
-	else
-		std::cout << "Client " << client.getNickname() << " (" << client.getUsername() << ") fd[" << client.getUserFd() << "] : " << msg;
+		std::map<std::string, void(Server::*)(Client&, std::stringstream &msg)>::iterator it = commandsChannels.find(cmd);
+		if (it != commandsChannels.end())
+			(this->*(it->second))(client, message);
+		else
+			std::cout << "Client " << client.getNickname() << " (" << client.getUsername() << ") fd[" << client.getUserFd() << "] : " << msg;
+	}
 	return ;
 }
 
@@ -216,7 +220,7 @@ void	Server::initEpoll(struct epoll_event &serverEvents) {
 
 	// ADDING SERVER FD TO EPOLL
 	serverEvents.data.fd = _serverSocket;
-	serverEvents.events = EPOLLIN | EPOLLOUT;
+	serverEvents.events = EPOLLIN | EPOLLET;
 	if (epoll_ctl(_epoll_fd, EPOLL_CTL_ADD, _serverSocket, &serverEvents) == -1)
 		throw Server::EpollControlException();
 }
@@ -226,20 +230,21 @@ void	Server::connectClient(struct epoll_event &serverEvents) {
 	struct	sockaddr_in clientAddr;
 
 	socklen_t addrlen = sizeof(clientAddr);
-	int clientFd = accept(_serverSocket, (struct sockaddr *)&clientAddr, &addrlen);
+	int clientFd = -1;
+	clientFd = accept(_serverSocket, (struct sockaddr *)&clientAddr, &addrlen);
 	if (clientFd < 0)
 		throw Server::AcceptException();
 	fcntl(clientFd, F_SETFL, O_NONBLOCK); // A VERIFIER
 
 	// ADD CLIENT FD TO EPOLL
 	serverEvents.data.fd = clientFd;
-	serverEvents.events = EPOLLIN;
+	serverEvents.events = EPOLLIN | EPOLLET;
 	if (epoll_ctl(_epoll_fd, EPOLL_CTL_ADD, clientFd, &serverEvents) == -1)
 		throw Server::EpollControlException();
 
 	// CREATE CLIENT OBJECT AND ADD TO LIST
 	Client newClient(clientFd);
-	this->clientsList.insert(std::pair<std::string, Client>("", newClient));
+	this->clientsList.insert(std::pair<std::string, Client>("unauthClient", newClient));
 	send(clientFd, "Please enter the password : ", 28, 0);
 
 	std::cout << "New client connected" << std::endl;
@@ -259,33 +264,29 @@ void	Server::liaiseClient(Client &client, int fd) {
 		close(fd);
 		this->clientsList.erase(client.getNickname()); // WEIRD IT++
 	}
-	else if (client.authentified)
-		clientAuth(client, msg);
 	else
 		handleClientMsg(client, msg);
 }
-
 void	Server::run(int _serverSocket)
+
 {
 	struct epoll_event	serverEvents;
-	struct epoll_event	clientsEvents[50];
 
 	initEpoll(serverEvents);
 	signal(SIGINT, exitProgram);
 	while (running)
 	{
+		struct epoll_event	clientsEvents[50];
 		// CREATING CLIENTS EPOLL EVENT STRUCT
-		std::cout << "EPOLL WAIT D EZINIZ\n";
 		int clientNbr = epoll_wait(_epoll_fd, clientsEvents, 50, -1);
 		if (clientNbr == -1) {
 			throw Server::EpollWaitException();
 		}
-		std::cout << "ITERATE DE ZINZ\n";
+
 		// ITERATE ON ALL CONNECTED CLIENTS FDS
 		for (int i = 0; i < clientNbr; ++i)
 		{
 			int fd = clientsEvents[i].data.fd;
-
 			// SETTING ITERATOR
 			std::map<std::string, Client>::iterator it = this->clientsList.begin();
 			while (it != this->clientsList.end())
@@ -294,14 +295,10 @@ void	Server::run(int _serverSocket)
 					break;
 				it++;
 			}
-			if (fd == _serverSocket) { // SERVER ACTIONS, NEW CONNECTIONS
-				std::cout << "JE CONNECTE LES CLIENTS\n";
+			if (fd == _serverSocket) // SERVER ACTIONS, NEW CONNECTIONS
 				connectClient(serverEvents);
-			}
-			else { // CLIENT ACTIONS
-				std::cout << "J:ecoute LES CLIENTS\n";
-				liaiseClient(it->second, fd);
-			}
+			else // CLIENT ACTIONS
+				liaiseClient(it->second, it->second.getUserFd());
 		}
 	}
 }
@@ -323,9 +320,6 @@ int	Server::checkPort(const char *portStr)
 
 Server::Server(unsigned short port, std::string password) : _port(port), _password(password)
 {
-	// CREATING SOCKET
-	int	_serverSocket;
-
 	_serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 	if (_serverSocket < 0)
 		throw Server::SocketErrorException();
@@ -341,9 +335,9 @@ Server::Server(unsigned short port, std::string password) : _port(port), _passwo
 	if (bind(_serverSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0)
 		throw Server::CantListenOnPortException();
 
-//	int on = 1;
- //	if (setsockopt(_serverSocket, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0)
-	//	throw Server::CantListenOnPortException();
+	int on = 1;
+	if (setsockopt(_serverSocket, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0)
+		throw Server::CantListenOnPortException();
 
 	if (listen(_serverSocket, serverAddr.sin_port) < 0)
 		throw Server::CantListenOnPortException();
