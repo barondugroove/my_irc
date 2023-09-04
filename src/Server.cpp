@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:06 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/04 16:51:51 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/04 17:23:58 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -271,12 +271,12 @@ void	Server::run(int _serverSocket)
 
 {
 	struct epoll_event	serverEvents;
+	struct epoll_event	clientsEvents[50];
 
 	initEpoll(serverEvents);
 	signal(SIGINT, exitProgram);
 	while (running)
 	{
-		struct epoll_event	clientsEvents[50];
 		// CREATING CLIENTS EPOLL EVENT STRUCT
 		int clientNbr = epoll_wait(_epoll_fd, clientsEvents, 50, -1);
 		if (clientNbr == -1) {
@@ -301,21 +301,6 @@ void	Server::run(int _serverSocket)
 				liaiseClient(it->second, it->second.getUserFd());
 		}
 	}
-}
-
-int	Server::checkPort(const char *portStr)
-{
-	char* ptr;
-	long int test = strtol(portStr, &ptr, 10);
-	unsigned short port = 0;
-
-	if (test > 65535 || test < 1023)
-		throw Server::PortOverflowException();
-	else if (*ptr == '\0')
-		port = test; // Port is valid
-	else
-		throw Server::PortNotNumberException();
-	return port;
 }
 
 Server::Server(unsigned short port, std::string password) : _port(port), _password(password)

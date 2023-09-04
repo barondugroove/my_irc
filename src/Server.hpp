@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:15 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/04 15:49:23 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/04 17:25:34 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,6 @@ class Server{
 		void			liaiseClient(Client &client, int fd);
 		void			clientAuth(Client &unauthClient, char *msg);
 		void			handleClientMsg(Client &Client, char *msg);
-		static int		checkPort(const char *portStr);
 		void			cmdJoin(Client &client, std::stringstream &msg);
 		void			cmdPart(Client &client, std::stringstream &msg);
 		void			cmdPrivMsg(Client &client, std::stringstream &msg);

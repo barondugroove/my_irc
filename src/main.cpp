@@ -6,11 +6,12 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/21 16:41:57 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/04 15:45:06 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/04 17:21:33 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
+#include "errors.cpp"
 #include <iostream>
 
 int main(int ac, char **av)
@@ -22,11 +23,10 @@ int main(int ac, char **av)
 	}
 
 	try {
+		checkInputs(av[1], av[2]);
 		std::cout << "IRC Server"<< std::endl;
-		unsigned short	port = Server::checkPort(av[1]);
 		std::string password = av[2];
-		password.erase(password.size());
-		Server	server(port, password);
+		Server	server(atoi(av[1]), password);
 	}
 	catch (std::exception & e) {
 		std::cerr << "Exception: "<< e.what() << std::endl;

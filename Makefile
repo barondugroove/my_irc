@@ -6,13 +6,14 @@
 #    By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/07/25 20:18:45 by rlaforge          #+#    #+#              #
-#    Updated: 2023/08/29 21:10:42 by bchabot          ###   ########.fr        #
+#    Updated: 2023/09/04 17:21:30 by bchabot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 SRCS =	src/main.cpp \
 		src/Server.cpp \
-		src/Channel.cpp
+		src/Channel.cpp \
+		src/errors.cpp
 
 NAME = ircserv
 
