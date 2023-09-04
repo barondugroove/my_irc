@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/29 14:26:42 by bchabot           #+#    #+#             */
-/*   Updated: 2023/08/30 15:51:43 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/05 01:39:45 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,15 +36,16 @@ class Channel {
 		void	sendMessageToAllMembers(std::string &msg);
 		void	sendMessageToMember(std::map<std::string, Client*>::iterator it, std::string &msg);
 		void	setOperator(std::string &nickname);
+		void	changeInviteMode();
 
 	private :
 		std::string _channelName;
+		std::string _topic;
 		std::map<std::string, Client*> _members;
 
 		std::vector<std::string>	_operator;
 		std::string					_password;
 		bool						_inviteMode;
-		bool						_topicMode;
 		bool						_passwordMode;
 		unsigned int				_userLimit;
 };

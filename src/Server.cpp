@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:06 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/04 17:23:58 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/05 01:50:25 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,6 +146,28 @@ void Server::cmdJoin(Client &client, std::stringstream &msg) {
 		sendMessage(client.getUserFd(), "Cannot join channel " + args + '\n');
 }
 
+void Server::cmdInvite(Client &client, std::stringstream &msg) {
+	std::string			channel;
+	std::string			user;
+
+	msg.ignore(512, ' ');
+	msg >> channel;
+	msg >> user;
+
+	if (!channel.empty() && channel[0] == '#') {
+		std::map<std::string, Channel>::iterator itChannel = channels.find(channel);
+		std::map<std::string, Client>::iterator itClient = clientsList.find(user);
+		if (itChannel != channels.end()  && itClient != clientsList.end()) {
+			std::cout << client.getNickname() << " has invited " << user << " to channel " << channel << std::endl;
+			itChannel->second.addUser(itClient->second.getNickname(), itClient->second);
+		}
+		else
+			sendMessage(client.getUserFd(), "Cannot invite " + user + " to channel " + channel + ".\n");
+	}
+	else
+		sendMessage(client.getUserFd(), "Cannot invite to channel " + channel + '\n');
+}
+
 void Server::cmdPrivMsg(Client &client, std::stringstream &msg) {
 	std::string			args;
 	std::string			text;
@@ -192,23 +214,42 @@ void Server::cmdPart(Client &client, std::stringstream &msg) {
 		sendMessage(client.getUserFd(), "Wrong PART args : " + args + '\n');
 }
 
+void Server::cmdKick(Client &client, std::stringstream &msg) {
+	std::string			channel;
+	std::string			user;
+
+	msg.ignore(512, ' ');
+	msg >> channel;
+	msg >> user;
+
+	if (!channel.empty() && channel[0] == '#') {
+		std::map<std::string, Channel>::iterator it = channels.find(channel);
+		if (it != channels.end() && it->second.isUserMember(client.getNickname())) {
+			it->second.eraseUser(client.getNickname());
+		}
+		else
+			sendMessage(client.getUserFd(), "Cannot kick user " + user + " cause he is not a member.\n");
+	}
+	else
+		sendMessage(client.getUserFd(), "Wrong channel name : " + channel + '\n');
+}
+
 void Server::handleClientMsg(Client &client, char *msg) {
 	std::stringstream	message(msg);
 	std::string			cmd;
 
-	if (!client.authentified)
+	message >> cmd;
+	if (!client.authentified) {
 		clientAuth(client, msg);
-	else {
-		message >> cmd;
-		if (cmd[0] == '/')
-			cmd.erase(cmd.begin());
-
-		std::map<std::string, void(Server::*)(Client&, std::stringstream &msg)>::iterator it = commandsChannels.find(cmd);
-		if (it != commandsChannels.end())
-			(this->*(it->second))(client, message);
-		else
-			std::cout << "Client " << client.getNickname() << " (" << client.getUsername() << ") fd[" << client.getUserFd() << "] : " << msg;
+		return ;
 	}
+	if (cmd[0] == '/')
+		cmd.erase(cmd.begin());
+	std::map<std::string, void(Server::*)(Client&, std::stringstream &msg)>::iterator it = commandsChannels.find(cmd);
+	if (it != commandsChannels.end())
+		(this->*(it->second))(client, message);
+	else
+		std::cout << "Client " << client.getNickname() << " (" << client.getUsername() << ") fd[" << client.getUserFd() << "] : " << msg;
 	return ;
 }
 
@@ -267,16 +308,16 @@ void	Server::liaiseClient(Client &client, int fd) {
 	else
 		handleClientMsg(client, msg);
 }
-void	Server::run(int _serverSocket)
 
+void	Server::run(int _serverSocket)
 {
 	struct epoll_event	serverEvents;
 	struct epoll_event	clientsEvents[50];
-
+	
 	initEpoll(serverEvents);
 	signal(SIGINT, exitProgram);
 	while (running)
-	{
+	{	
 		// CREATING CLIENTS EPOLL EVENT STRUCT
 		int clientNbr = epoll_wait(_epoll_fd, clientsEvents, 50, -1);
 		if (clientNbr == -1) {
@@ -330,6 +371,8 @@ Server::Server(unsigned short port, std::string password) : _port(port), _passwo
 	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("JOIN", &Server::cmdJoin));
 	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("PART", &Server::cmdPart));
 	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("PRIVMSG", &Server::cmdPrivMsg));
+	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("KICK", &Server::cmdKick));
+	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("INVITE", &Server::cmdInvite));
 
 	std::cout << std::endl << "All good!" << std::endl << "port    : " << _port << std::endl << "password: " << _password << std::endl;
 	run(_serverSocket);
