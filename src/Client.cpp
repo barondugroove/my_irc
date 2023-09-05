@@ -15,9 +15,9 @@
 
 Client::Client(int clientFD) : _fd(clientFD) {
 	std::cout<< "Client Constructor called"<< std::endl;
-	this->password = false;
-	this->named = false;
-	this->authentified = false;
+	this->_authentified = false;
+	this->_nickname = "";
+	this->_username = "";
 	return;
 }
 
@@ -27,9 +27,7 @@ Client::Client(const Client &src) : _fd(src.getUserFd()) {
 
 Client & Client::operator=(const Client &rhs) {
 	if (this != &rhs) {
-		this->password = rhs.password;
-		this->named = rhs.named;
-		this->authentified = rhs.authentified;
+		this->_authentified = rhs._authentified;
 		this->_nickname = rhs._nickname;
 		this->_username = rhs._username;
 	}
@@ -41,22 +39,24 @@ Client::~Client(void) {
 	return;
 }
 
-std::string & Client::getNickname() {
-	return _nickname;
-}
-
-std::string & Client::getUsername() {
-	return _username;
-}
-
-const int & Client::getUserFd() const {
-	return _fd;
-}
-
-void Client::setNickname(std::string &nickname) {
+void	Client::setNickname(std::string nickname) {
 	_nickname = nickname;
 }
 
-void Client::setUsername(std::string &username) {
+void	Client::setUsername(std::string username) {
 	_username = username;
+}
+
+void	Client::setPassword(std::string password) {
+	_password = password;
+}
+
+void	Client::setAuth(bool status) {
+	_authentified = status;
+}
+
+void	Client::clearInfo() {
+	_password = "";
+	_nickname = "";
+	_username = "";
 }

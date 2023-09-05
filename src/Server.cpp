@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:06 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/05 01:50:25 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/05 19:09:43 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ void	exitProgram(int signal) {
 }
 
 bool checkNickname(std::string &test) {
-	std::string forbiddenChars = " ,*?!@.";
+	const std::string forbiddenChars = " ,*?!@.";
 
 	if (test.empty() || test[0] == '$' || test[0] == ':' || test[0] == '#' || test[0] == '&')
 		return false;
@@ -77,7 +77,7 @@ bool checkNickname(std::string &test) {
 	return true;
 }
 
-void sendMessage(const int &fd, std::string msg) {
+void Server::sendMessage(const int &fd, std::string msg) {
 	send(fd, msg.c_str(), msg.size(), 0);
 }
 
@@ -86,170 +86,26 @@ void	Server::eraseChannel(std::map<std::string, Channel>::iterator it) {
 	channels.erase(it);
 }
 
-void Server::clientAuth(Client &unauthClient, char *msg) {
-	std::string test = msg;
-	test.erase(test.size() - 1);
-
-	std::cout << "Client fd[" << unauthClient.getUserFd() << "] (not auth) sent : " << msg;
-	if (!unauthClient.password)
-	{
-		if (test == _password)
-		{
-			unauthClient.password = true;
-			sendMessage(unauthClient.getUserFd(), "You are connected successfully!\nPlease enter your nickname : ");
-		}
-		else
-			sendMessage(unauthClient.getUserFd(), "Error. Password is wrong, please try again : ");
-	}
-	else if (unauthClient.password && !unauthClient.named)
-	{
-		if (!checkNickname(test)) {
-			sendMessage(unauthClient.getUserFd(), "Error. Nickname is wrong, please try again : ");
-			return ;
-		}
-		else {
-			unauthClient.setNickname(test);
-			unauthClient.named = true;
-			sendMessage(unauthClient.getUserFd(), "Please enter your username : ");
-		}
-	}
-	else if (unauthClient.password && unauthClient.named)
-	{
-		unauthClient.setUsername(test);
-		unauthClient.authentified = true;
-		sendMessage(unauthClient.getUserFd(), "You are logged successfully!\n");
-	}
-}
-
-void Server::cmdJoin(Client &client, std::stringstream &msg) {
-	std::string			args;
-
-	msg.ignore(512, ' ');
-	msg >> args;
-
-	if (!args.empty() && args[0] == '#') {
-		std::map<std::string, Channel>::iterator it = channels.find(args);
-		if (it != channels.end()) {
-			std::cout << client.getNickname() << " is joining channel " << args << std::endl;
-			it->second.addUser(client.getNickname(), client);
-		}
-		else {
-			std::cout << "New channel " << args << " created." << std::endl;
-			Channel	newChannel(args, client);
-			channels.insert(std::pair<std::string, Channel>(args, newChannel));
-			std::map<std::string, Channel>::iterator it = channels.find(args);
-			it->second.addUser(client.getNickname(), client);
-			it->second.setOperator(client.getNickname());
-		}
-	}
-	else
-		sendMessage(client.getUserFd(), "Cannot join channel " + args + '\n');
-}
-
-void Server::cmdInvite(Client &client, std::stringstream &msg) {
-	std::string			channel;
-	std::string			user;
-
-	msg.ignore(512, ' ');
-	msg >> channel;
-	msg >> user;
-
-	if (!channel.empty() && channel[0] == '#') {
-		std::map<std::string, Channel>::iterator itChannel = channels.find(channel);
-		std::map<std::string, Client>::iterator itClient = clientsList.find(user);
-		if (itChannel != channels.end()  && itClient != clientsList.end()) {
-			std::cout << client.getNickname() << " has invited " << user << " to channel " << channel << std::endl;
-			itChannel->second.addUser(itClient->second.getNickname(), itClient->second);
-		}
-		else
-			sendMessage(client.getUserFd(), "Cannot invite " + user + " to channel " + channel + ".\n");
-	}
-	else
-		sendMessage(client.getUserFd(), "Cannot invite to channel " + channel + '\n');
-}
-
-void Server::cmdPrivMsg(Client &client, std::stringstream &msg) {
-	std::string			args;
-	std::string			text;
-
-	msg.ignore(512, ' ');
-	msg >> args;
-	msg >> text;
-
-	if (!args.empty() && args[0] == '#') {
-		std::map<std::string, Channel>::iterator it = channels.find(args);
-		if (it != channels.end()) {
-			it->second.sendMessageToAllMembers(text += '\n');
-		}
-		else
-			sendMessage(client.getUserFd(), "Cannot send message to channel " + args + '\n');
-	}
-	else {
-		std::map<std::string, Client>::iterator it = clientsList.find(args);
-		if (it != clientsList.end()) {
-			sendMessage(it->second.getUserFd(), text);
-		}
-		else
-			sendMessage(client.getUserFd(), "Cannot send message to user " + args + '\n');
-	}
-}
-
-void Server::cmdPart(Client &client, std::stringstream &msg) {
-	std::string			args;
-
-	msg.ignore(512, ' ');
-	msg >> args;
-
-	if (!args.empty() && args[0] == '#') {
-		std::map<std::string, Channel>::iterator it = channels.find(args);
-		if (it != channels.end() && it->second.isUserMember(client.getNickname())) {
-			it->second.eraseUser(client.getNickname());
-			if (it->second.getUserCount() == 0)
-				eraseChannel(it);
-		}
-		else
-			sendMessage(client.getUserFd(), "Cannot part channel " + args + " cause you are not a member.\n");
-	}
-	else
-		sendMessage(client.getUserFd(), "Wrong PART args : " + args + '\n');
-}
-
-void Server::cmdKick(Client &client, std::stringstream &msg) {
-	std::string			channel;
-	std::string			user;
-
-	msg.ignore(512, ' ');
-	msg >> channel;
-	msg >> user;
-
-	if (!channel.empty() && channel[0] == '#') {
-		std::map<std::string, Channel>::iterator it = channels.find(channel);
-		if (it != channels.end() && it->second.isUserMember(client.getNickname())) {
-			it->second.eraseUser(client.getNickname());
-		}
-		else
-			sendMessage(client.getUserFd(), "Cannot kick user " + user + " cause he is not a member.\n");
-	}
-	else
-		sendMessage(client.getUserFd(), "Wrong channel name : " + channel + '\n');
-}
-
 void Server::handleClientMsg(Client &client, char *msg) {
 	std::stringstream	message(msg);
 	std::string			cmd;
 
 	message >> cmd;
-	if (!client.authentified) {
-		clientAuth(client, msg);
-		return ;
-	}
 	if (cmd[0] == '/')
 		cmd.erase(cmd.begin());
+
 	std::map<std::string, void(Server::*)(Client&, std::stringstream &msg)>::iterator it = commandsChannels.find(cmd);
-	if (it != commandsChannels.end())
-		(this->*(it->second))(client, message);
-	else
+	if (it == commandsChannels.end()) {
 		std::cout << "Client " << client.getNickname() << " (" << client.getUsername() << ") fd[" << client.getUserFd() << "] : " << msg;
+		sendMessage(client.getUserFd(), ERR_CMDNOTFOUND(client.getNickname()));
+		return ;
+	}
+	if (!client.isAuth() && it->first != "PASS" && it->first != "USER"  && it->first != "NICK") {
+		sendMessage(client.getUserFd(), ERR_NOTREGISTERED(client.getNickname()));
+		return ;
+	}
+	else
+		(this->*(it->second))(client, message);
 	return ;
 }
 
@@ -285,9 +141,7 @@ void	Server::connectClient(struct epoll_event &serverEvents) {
 
 	// CREATE CLIENT OBJECT AND ADD TO LIST
 	Client newClient(clientFd);
-	this->clientsList.insert(std::pair<std::string, Client>("unauthClient", newClient));
-	send(clientFd, "Please enter the password : ", 28, 0);
-
+	this->clientsList.insert(std::pair<std::string, Client>("", newClient));
 	std::cout << "New client connected" << std::endl;
 }
 
@@ -300,8 +154,10 @@ void	Server::liaiseClient(Client &client, int fd) {
 	if (bytes_received <= 0) // == 0 = DISCONECTED // < 0 ERROR
 	{
 		std::cout << "Client disconnected" << std::endl;
-		if (epoll_ctl(_epoll_fd, EPOLL_CTL_DEL, fd, NULL) == -1)
+		if (epoll_ctl(_epoll_fd, EPOLL_CTL_DEL, fd, NULL) == -1) {
+			std::cout << "ERREUR DANS LIAISE CLIENT" << std::endl;
 			throw Server::EpollControlException();
+		}
 		close(fd);
 		this->clientsList.erase(client.getNickname()); // WEIRD IT++
 	}
@@ -312,12 +168,12 @@ void	Server::liaiseClient(Client &client, int fd) {
 void	Server::run(int _serverSocket)
 {
 	struct epoll_event	serverEvents;
-	struct epoll_event	clientsEvents[50];
-	
+
 	initEpoll(serverEvents);
 	signal(SIGINT, exitProgram);
 	while (running)
-	{	
+	{
+		struct epoll_event	clientsEvents[50];
 		// CREATING CLIENTS EPOLL EVENT STRUCT
 		int clientNbr = epoll_wait(_epoll_fd, clientsEvents, 50, -1);
 		if (clientNbr == -1) {
@@ -339,7 +195,7 @@ void	Server::run(int _serverSocket)
 			if (fd == _serverSocket) // SERVER ACTIONS, NEW CONNECTIONS
 				connectClient(serverEvents);
 			else // CLIENT ACTIONS
-				liaiseClient(it->second, it->second.getUserFd());
+				liaiseClient(it->second, fd);
 		}
 	}
 }
@@ -373,6 +229,11 @@ Server::Server(unsigned short port, std::string password) : _port(port), _passwo
 	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("PRIVMSG", &Server::cmdPrivMsg));
 	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("KICK", &Server::cmdKick));
 	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("INVITE", &Server::cmdInvite));
+	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("TOPIC", &Server::cmdTopic));
+
+	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("PASS", &Server::cmdPass));
+	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("NICK", &Server::cmdNick));
+	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("USER", &Server::cmdUser));
 
 	std::cout << std::endl << "All good!" << std::endl << "port    : " << _port << std::endl << "password: " << _password << std::endl;
 	run(_serverSocket);

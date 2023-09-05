@@ -22,23 +22,27 @@ class Client{
 		Client & operator=(const Client &rhs); //Assignement Value Operator
 		~Client();				//Destructor
 
-		void Authentify(std::string name);
+		std::string	&getNickname()		{return _nickname;};
+		std::string	&getUsername()		{return _username;};
+		const int	&getUserFd() const	{return _fd;};
+		std::string	&getPassword()		{return _password;};
 
-		std::string	&getNickname();
-		std::string	&getUsername();
-		const int	&getUserFd() const;
-		void		setNickname(std::string &nickname);
-		void		setUsername(std::string &username);
+		bool		isAuth()			{return _authentified;};
 
-		// The 3 level of authentication
-		bool password;
-		bool named;
-		bool authentified;
+		void		setNickname(std::string nickname);
+		void		setUsername(std::string username);
+		void		setPassword(std::string password);
+		void		setAuth(bool status);
+		void		clearInfo();
+
 
 	private :
+		bool		_authentified;
+		const int 	_fd;
+
 		std::string _nickname;
 		std::string _username;
-		const int 	_fd;
+		std::string	_password;
 
 };
 

@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/29 14:26:42 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/05 01:39:45 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/05 19:03:40 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,15 +28,21 @@ class Channel {
 		~Channel();												//Destructor
 
 		std::string getChannelName() const;
+		std::string	&getTopic();
+		bool		getTopicMode();
 		int			getUserCount() const;
+		void		setTopic(std::string topic);
+		void		setOperator(std::string &nickname);
 
-		bool	isUserMember(std::string &nickName);
-		void	addUser(std::string &nickName, Client &client);
-		void	eraseUser(std::string &nickName);
-		void	sendMessageToAllMembers(std::string &msg);
-		void	sendMessageToMember(std::map<std::string, Client*>::iterator it, std::string &msg);
-		void	setOperator(std::string &nickname);
-		void	changeInviteMode();
+		bool		isUserMember(std::string &nickName);
+		bool		isUserOperator(std::string &nickName);
+
+		void		addUser(std::string &nickName, Client &client);
+		void		eraseUser(std::string &nickName);
+		void		sendMessageToAllMembers(std::string msg);
+		void		sendMessageToMember(std::map<std::string, Client*>::iterator it, std::string msg);
+		void		changeInviteMode(bool status);
+
 
 	private :
 		std::string _channelName;
@@ -44,10 +50,11 @@ class Channel {
 		std::map<std::string, Client*> _members;
 
 		std::vector<std::string>	_operator;
-		std::string					_password;
+		std::string					_key;
 		bool						_inviteMode;
+		bool						_topicMode;
 		bool						_passwordMode;
-		unsigned int				_userLimit;
+		int							_userLimit;
 };
 
 #endif

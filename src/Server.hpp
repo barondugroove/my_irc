@@ -6,21 +6,22 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:15 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/05 01:40:16 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/05 17:22:25 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
+#include "Client.hpp"
+#include "Channel.hpp"
+#include "define.hpp"
 #include <string>
 #include <list>
 #include <map>
 #include <algorithm>
 #include <sys/epoll.h>
-#include "Client.hpp"
-#include "Channel.hpp"
-
+#include <sstream>
 class Server{
 
 	public:
@@ -76,14 +77,20 @@ class Server{
 		void			initEpoll(struct epoll_event &serverEvents);
 		void			connectClient(struct epoll_event &serverEvents);
 		void			liaiseClient(Client &client, int fd);
-		void			clientAuth(Client &unauthClient, char *msg);
 		void			handleClientMsg(Client &Client, char *msg);
+		void			eraseChannel(std::map<std::string, Channel>::iterator it);
+		void			sendMessage(const int &fd, std::string msg);
+
 		void			cmdJoin(Client &client, std::stringstream &msg);
 		void			cmdPart(Client &client, std::stringstream &msg);
 		void			cmdPrivMsg(Client &client, std::stringstream &msg);
 		void			cmdKick(Client &client, std::stringstream &msg);
 		void			cmdInvite(Client &client, std::stringstream &msg);
-		void			eraseChannel(std::map<std::string, Channel>::iterator it);
+		void			cmdTopic(Client &client, std::stringstream &msg);
+
+		void			cmdPass(Client &unauthClient, std::stringstream &msg);
+		void			cmdNick(Client &unauthClient, std::stringstream &msg);
+		void			cmdUser(Client &unauthClient, std::stringstream &msg);
 
 	private :
 		unsigned short		_port;
