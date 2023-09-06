@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 17:10:03 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/05 19:09:10 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/06 16:24:40 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,13 @@
 #define ERR_BADCHANNELKEY(client, channel) (client + " " + channel + " :Cannot join channel (+k)\n")
 #define ERR_USERNOTINCHANNEL(client, nick, channel) (client + " " + nick + " " + channel + " :They aren't on that channel\n")
 #define ERR_CANNOTSENDTOCHAN(client, channel) (client + " " + channel + " :Cannot send to channel\n")
+#define ERR_USERONCHANNEL(client, nick, channel) (client + " " + nick + " " + channel + " :is already on channel\n")
 
 //PRIVMSG BUILDERS
-#define CHANNEL_MESSAGES(client, channel, msg) ("Message from " + client + "to " + channel + " : \n" + msg + '\n')
+#define CHANNEL_MESSAGES(client, nick, msg) (":" + client + " PRIVMSG " + nick + " :" + msg + "\r\n")
 #define USER_MESSAGES(client, msg) ("Message from " + client + " : \n" + msg + '\n')
+
+//SERVER REPLIES
+#define RPL_JOIN(client, channel) (":" + client + " JOIN :" + channel + "\r\n")
 
 #endif

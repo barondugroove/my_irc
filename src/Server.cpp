@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:06 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/05 19:09:43 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/06 17:32:04 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,28 +86,6 @@ void	Server::eraseChannel(std::map<std::string, Channel>::iterator it) {
 	channels.erase(it);
 }
 
-void Server::handleClientMsg(Client &client, char *msg) {
-	std::stringstream	message(msg);
-	std::string			cmd;
-
-	message >> cmd;
-	if (cmd[0] == '/')
-		cmd.erase(cmd.begin());
-
-	std::map<std::string, void(Server::*)(Client&, std::stringstream &msg)>::iterator it = commandsChannels.find(cmd);
-	if (it == commandsChannels.end()) {
-		std::cout << "Client " << client.getNickname() << " (" << client.getUsername() << ") fd[" << client.getUserFd() << "] : " << msg;
-		sendMessage(client.getUserFd(), ERR_CMDNOTFOUND(client.getNickname()));
-		return ;
-	}
-	if (!client.isAuth() && it->first != "PASS" && it->first != "USER"  && it->first != "NICK") {
-		sendMessage(client.getUserFd(), ERR_NOTREGISTERED(client.getNickname()));
-		return ;
-	}
-	else
-		(this->*(it->second))(client, message);
-	return ;
-}
 
 void	Server::initEpoll(struct epoll_event &serverEvents) {
 	// CREATE EPOLL FD
@@ -145,6 +123,31 @@ void	Server::connectClient(struct epoll_event &serverEvents) {
 	std::cout << "New client connected" << std::endl;
 }
 
+void Server::handleClientMsg(Client &client, std::string msg) {
+
+	msg.erase(msg.find("\r\n"));
+	std::stringstream	message(msg);
+	std::string			cmd;
+
+	message >> cmd;
+	if (cmd[0] == '/')
+		cmd.erase(cmd.begin());
+
+	std::map<std::string, void(Server::*)(Client&, std::stringstream &msg)>::iterator it = commandsChannels.find(cmd);
+	if (it == commandsChannels.end()) {
+		std::cout << "Client " << client.getNickname() << " (" << client.getUsername() << ") fd[" << client.getUserFd() << "] : " << msg;
+		sendMessage(client.getUserFd(), ERR_CMDNOTFOUND(client.getNickname()));
+		return ;
+	}
+	if (!client.isAuth() && it->first != "PASS" && it->first != "USER"  && it->first != "NICK") {
+		sendMessage(client.getUserFd(), ERR_NOTREGISTERED(client.getNickname()));
+		return ;
+	}
+	else
+		(this->*(it->second))(client, message);
+	return ;
+}
+
 void	Server::liaiseClient(Client &client, int fd) {
 	char msg[512];
 	memset(&msg, 0, sizeof(msg));
@@ -154,10 +157,8 @@ void	Server::liaiseClient(Client &client, int fd) {
 	if (bytes_received <= 0) // == 0 = DISCONECTED // < 0 ERROR
 	{
 		std::cout << "Client disconnected" << std::endl;
-		if (epoll_ctl(_epoll_fd, EPOLL_CTL_DEL, fd, NULL) == -1) {
-			std::cout << "ERREUR DANS LIAISE CLIENT" << std::endl;
+		if (epoll_ctl(_epoll_fd, EPOLL_CTL_DEL, fd, NULL) == -1)
 			throw Server::EpollControlException();
-		}
 		close(fd);
 		this->clientsList.erase(client.getNickname()); // WEIRD IT++
 	}
@@ -219,6 +220,9 @@ Server::Server(unsigned short port, std::string password) : _port(port), _passwo
 
 	int on = 1;
 	if (setsockopt(_serverSocket, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0)
+		throw Server::CantListenOnPortException();
+
+	if (setsockopt(_serverSocket, SOL_SOCKET, SO_REUSEPORT, &on, sizeof(on)) < 0)
 		throw Server::CantListenOnPortException();
 
 	if (listen(_serverSocket, serverAddr.sin_port) < 0)

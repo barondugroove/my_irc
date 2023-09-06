@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:15 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/05 17:22:25 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/06 17:20:54 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ class Server{
 		void			initEpoll(struct epoll_event &serverEvents);
 		void			connectClient(struct epoll_event &serverEvents);
 		void			liaiseClient(Client &client, int fd);
-		void			handleClientMsg(Client &Client, char *msg);
+		void			handleClientMsg(Client &Client, std::string msg);
 		void			eraseChannel(std::map<std::string, Channel>::iterator it);
 		void			sendMessage(const int &fd, std::string msg);
 

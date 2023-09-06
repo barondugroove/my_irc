@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 14:45:15 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/05 19:09:53 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/06 17:58:23 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,29 +14,29 @@
 #include <iostream>
 
 void Server::cmdJoin(Client &client, std::stringstream &msg) {
-	std::string			args;
+	std::string	channelName;
+	std::string	key;
 
 	msg.ignore(512, ' ');
-	std::getline(msg, args);
+	std::getline(msg, channelName, ' ');
+	std::getline(msg, key);
 
-	std::cout << "args is " << args << std::endl;
-	if (!args.empty() && args[0] == '#') {
-		std::map<std::string, Channel>::iterator it = channels.find(args);
-		if (it != channels.end()) {
-			std::cout << client.getNickname() << " is joining channel " << args << std::endl;
-			it->second.addUser(client.getNickname(), client);
-		}
-		else {
-			std::cout << "New channel " << args << " created." << std::endl;
-			Channel	newChannel(args, client);
-			channels.insert(std::pair<std::string, Channel>(args, newChannel));
-			std::map<std::string, Channel>::iterator it = channels.find(args);
-			it->second.addUser(client.getNickname(), client);
-			it->second.setOperator(client.getNickname());
-		}
+	if (channelName.empty() || channelName[0] != '#') {
+		sendMessage(client.getUserFd(), ERR_NEEDMOREPARAMS(client.getNickname(), channelName));
+		return ;
 	}
-	else
-		sendMessage(client.getUserFd(), "Cannot join channel " + args + '\n');
+
+	std::map<std::string, Channel>::iterator it = channels.find(channelName);
+	if (it != channels.end() && !it->second.isUserMember(client.getNickname())) {
+		std::cout << client.getNickname() << " is joining channel " << channelName << std::endl;
+		it->second.addUser(client.getNickname(), client);
+	}
+	else if (it == channels.end()) {
+		std::cout << "New channel " << channelName << " created." << std::endl;
+		Channel	newChannel(channelName, client);
+		channels.insert(std::pair<std::string, Channel>(channelName, newChannel));
+		sendMessage(client.getUserFd(), RPL_JOIN(client.getNickname(), channelName));
+	}
 }
 
 void Server::cmdInvite(Client &client, std::stringstream &msg) {
@@ -73,7 +73,10 @@ void Server::cmdPrivMsg(Client &client, std::stringstream &msg) {
 	if (!args.empty() && args[0] == '#') {
 		std::map<std::string, Channel>::iterator it = channels.find(args);
 		if (it != channels.end()) {
-			it->second.sendMessageToAllMembers(CHANNEL_MESSAGES(client.getNickname(), args, text));
+			if (*text.begin() == ':')
+				it->second.sendMessageToAllMembers(CHANNEL_MESSAGES(client.getNickname(), args, text), client.getNickname());
+			else
+				it->second.sendMessageToAllMembers(CHANNEL_MESSAGES(client.getNickname(), args, text), "");
 		}
 		else
 			sendMessage(client.getUserFd(), "Cannot send message to channel " + args + '\n');
@@ -92,20 +95,20 @@ void Server::cmdPart(Client &client, std::stringstream &msg) {
 	std::string			channel;
 
 	msg.ignore(512, ' ');
-	msg >> channel;
+	std::getline(msg, channel, ' ');
 
-	if (!channel.empty() && channel[0] == '#') {
-		std::map<std::string, Channel>::iterator it = channels.find(channel);
-		if (it != channels.end() && it->second.isUserMember(client.getNickname())) {
-			it->second.eraseUser(client.getNickname());
-			if (it->second.getUserCount() == 0)
-				eraseChannel(it);
-		}
-		else
-			sendMessage(client.getUserFd(), ERR_NOTONCHANNEL(client.getNickname(), channel));
+	std::map<std::string, Channel>::iterator it = channels.find(channel);
+	if (it == channels.end()) {
+		sendMessage(client.getUserFd(), ERR_NOSUCHCHANNEL(client.getNickname(), channel));
+		return ;
+	}
+	if (it->second.isUserMember(client.getNickname())) {
+		it->second.eraseUser(client.getNickname());
+		if (it->second.getUserCount() == 0)
+			eraseChannel(it);
 	}
 	else
-		sendMessage(client.getUserFd(), "Wrong PART channel : " + channel + '\n');
+		sendMessage(client.getUserFd(), ERR_NOTONCHANNEL(client.getNickname(), channel));
 }
 
 void Server::cmdTopic(Client &client, std::stringstream &msg) {
@@ -141,12 +144,12 @@ void Server::cmdTopic(Client &client, std::stringstream &msg) {
 	if (text == ":") {
 		it->second.setTopic("");
 		std::string msg = "Topic for " + channel + " has been cleared\n";
-		it->second.sendMessageToAllMembers(msg);
+		it->second.sendMessageToAllMembers(msg, client.getNickname());
 	}
 	else {
 		it->second.setTopic(text);
 		std::string msg = "Topic for " + channel + " has been changed to " + it->second.getTopic() + "\n";
-		it->second.sendMessageToAllMembers(msg);
+		it->second.sendMessageToAllMembers(msg, client.getNickname());
 	}
 }
 

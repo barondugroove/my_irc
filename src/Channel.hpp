@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/29 14:26:42 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/05 19:03:40 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/06 16:59:10 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ class Channel {
 
 		void		addUser(std::string &nickName, Client &client);
 		void		eraseUser(std::string &nickName);
-		void		sendMessageToAllMembers(std::string msg);
+		void		sendMessageToAllMembers(std::string msg, std::string nickName);
 		void		sendMessageToMember(std::map<std::string, Client*>::iterator it, std::string msg);
 		void		changeInviteMode(bool status);
 
