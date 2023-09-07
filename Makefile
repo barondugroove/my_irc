@@ -6,16 +6,24 @@
 #    By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/07/25 20:18:45 by rlaforge          #+#    #+#              #
-#    Updated: 2023/09/05 14:47:48 by bchabot          ###   ########.fr        #
+#    Updated: 2023/09/07 16:22:30 by bchabot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-SRCS =	src/main.cpp \
-		src/Server.cpp \
-		src/ServerCmds.cpp \
-		src/Channel.cpp
-
 NAME = ircserv
+
+SRCS =	src/main.cpp \
+		src/server/Server.cpp \
+		src/server/cmds/cmdAuth.cpp \
+		src/server/cmds/cmdInvite.cpp \
+		src/server/cmds/cmdJoin.cpp \
+		src/server/cmds/cmdKick.cpp \
+		src/server/cmds/cmdPart.cpp \
+		src/server/cmds/cmdPrivmsg.cpp \
+		src/server/cmds/cmdTopic.cpp \
+		src/channel/Channel.cpp \
+		src/client/Client.cpp
+
 
 OBJS = $(SRCS:.cpp=.o)
 

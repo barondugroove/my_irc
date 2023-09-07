@@ -10,8 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Channel.hpp"
-#include "Server.hpp"
+#include "../../includes/Server.hpp"
 #include <iostream>
 
 Channel::Channel(std::string name, Client &channelCreator) : _channelName(name) {
@@ -49,16 +48,8 @@ Channel::~Channel(void) {
 	return;
 }
 
-std::string	Channel::getChannelName() const {
-	return _channelName;
-}
-
-int			Channel::getUserCount() const {
-	return _members.size();
-}
-
-bool		Channel::getTopicMode() {
-	return _topicMode;
+bool	Channel::isChannelFull() {
+	return (_userLimit - _members.size()) >= 1;
 }
 
 void	Channel::sendMessageToAllMembers(std::string msg, std::string nickname) {
@@ -110,14 +101,6 @@ void	Channel::setTopic(std::string topic) {
 	_topic = topic;
 }
 
-std::string&	Channel::getTopic() {
-	return _topic;
-}
-
 void	Channel::changeInviteMode(bool status) {
-	std::string	mode = "desactivated";
-
 	_inviteMode = status;
-	if (_inviteMode)
-		mode = "activated";
 }

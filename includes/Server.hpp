@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:15 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/06 17:20:54 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/07 16:29:30 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,11 @@
 #include <algorithm>
 #include <sys/epoll.h>
 #include <sstream>
-class Server{
+#include <iostream>
+
+class Server {
 
 	public:
-
 		//Exceptions
 		class PortNotNumberException : public std::exception {
 					public :

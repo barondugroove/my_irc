@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Client.hpp"
+#include "../../includes/Server.hpp"
 #include <iostream>
 
 Client::Client(int clientFD) : _fd(clientFD) {

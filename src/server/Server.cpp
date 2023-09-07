@@ -6,12 +6,11 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:06 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/06 17:32:04 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/07 16:56:37 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
-#include "Client.cpp"
+#include "../../includes/Server.hpp"
 #include <iostream>
 #include <unistd.h>
 #include <limits>
@@ -25,6 +24,7 @@
 #include <sstream>
 #include <algorithm>
 #include <csignal>
+#include <netdb.h>
 
 bool running = true;
 
@@ -134,8 +134,8 @@ void Server::handleClientMsg(Client &client, std::string msg) {
 		cmd.erase(cmd.begin());
 
 	std::map<std::string, void(Server::*)(Client&, std::stringstream &msg)>::iterator it = commandsChannels.find(cmd);
+	std::cout << "Client " << client.getNickname() << " (" << client.getUsername() << ") fd[" << client.getUserFd() << "] : " << msg << std::endl;
 	if (it == commandsChannels.end()) {
-		std::cout << "Client " << client.getNickname() << " (" << client.getUsername() << ") fd[" << client.getUserFd() << "] : " << msg;
 		sendMessage(client.getUserFd(), ERR_CMDNOTFOUND(client.getNickname()));
 		return ;
 	}
@@ -203,7 +203,11 @@ void	Server::run(int _serverSocket)
 
 Server::Server(unsigned short port, std::string password) : _port(port), _password(password)
 {
-	_serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+	struct protoent	*proto;
+	int				option = 1;
+
+	proto = getprotobyname("tcp");
+	_serverSocket = socket(AF_INET, SOCK_STREAM, proto->p_proto);
 	if (_serverSocket < 0)
 		throw Server::SocketErrorException();
 
@@ -218,11 +222,10 @@ Server::Server(unsigned short port, std::string password) : _port(port), _passwo
 	if (bind(_serverSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0)
 		throw Server::CantListenOnPortException();
 
-	int on = 1;
-	if (setsockopt(_serverSocket, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0)
+	if (setsockopt(_serverSocket, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option)) < 0)
 		throw Server::CantListenOnPortException();
 
-	if (setsockopt(_serverSocket, SOL_SOCKET, SO_REUSEPORT, &on, sizeof(on)) < 0)
+	if (setsockopt(_serverSocket, SOL_SOCKET, SO_REUSEPORT, &option, sizeof(option)) < 0)
 		throw Server::CantListenOnPortException();
 
 	if (listen(_serverSocket, serverAddr.sin_port) < 0)

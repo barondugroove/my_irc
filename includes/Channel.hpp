@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/29 14:26:42 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/06 16:59:10 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/07 16:11:59 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,15 +27,18 @@ class Channel {
 		Channel & operator=(const Channel &rhs); //Assignement Value Operator
 		~Channel();												//Destructor
 
-		std::string getChannelName() const;
-		std::string	&getTopic();
-		bool		getTopicMode();
-		int			getUserCount() const;
+		std::string getChannelName() const {return _channelName;};
+		std::string	&getTopic() {return _topic;};
+		bool		getTopicMode() {return _topicMode;};
+		int			getUserCount() {return _members.size();};
+
 		void		setTopic(std::string topic);
 		void		setOperator(std::string &nickname);
 
+		bool		isChannelFull();
 		bool		isUserMember(std::string &nickName);
 		bool		isUserOperator(std::string &nickName);
+		bool		isInviteLocked(std::string &nickName);
 
 		void		addUser(std::string &nickName, Client &client);
 		void		eraseUser(std::string &nickName);
@@ -50,6 +53,7 @@ class Channel {
 		std::map<std::string, Client*> _members;
 
 		std::vector<std::string>	_operator;
+		std::vector<std::string>	_invitees;
 		std::string					_key;
 		bool						_inviteMode;
 		bool						_topicMode;
