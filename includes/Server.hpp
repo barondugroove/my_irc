@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:15 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/07 16:29:30 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/07 19:01:37 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 #include "Channel.hpp"
 #include "define.hpp"
 #include <string>
-#include <list>
 #include <map>
 #include <algorithm>
 #include <sys/epoll.h>
@@ -82,28 +81,35 @@ class Server {
 		void			eraseChannel(std::map<std::string, Channel>::iterator it);
 		void			sendMessage(const int &fd, std::string msg);
 
+		void			cmdPass(Client &unauthClient, std::stringstream &msg);
+		void			cmdNick(Client &unauthClient, std::stringstream &msg);
+		void			cmdUser(Client &unauthClient, std::stringstream &msg);
+
 		void			cmdJoin(Client &client, std::stringstream &msg);
 		void			cmdPart(Client &client, std::stringstream &msg);
 		void			cmdPrivMsg(Client &client, std::stringstream &msg);
 		void			cmdKick(Client &client, std::stringstream &msg);
 		void			cmdInvite(Client &client, std::stringstream &msg);
 		void			cmdTopic(Client &client, std::stringstream &msg);
+		void			cmdMode(Client &client, std::stringstream &msg);
 
-		void			cmdPass(Client &unauthClient, std::stringstream &msg);
-		void			cmdNick(Client &unauthClient, std::stringstream &msg);
-		void			cmdUser(Client &unauthClient, std::stringstream &msg);
+		void			modeI(Channel &channel, Client &client, bool status);
+		void			modeT(Channel &channel, Client &client, bool status);
+		void			modeK(Channel &channel, Client &client, bool status);
+		void			modeO(Channel &channel, Client &client, bool status);
+		void			modeL(Channel &channel, Client &client, bool status);
 
 	private :
 		unsigned short		_port;
 		const std::string	_password;
-		int					_epoll_fd;
 		int					_serverSocket;
+		int					_epoll_fd;
 
-		std::map<std::string, Client> clientsList;
-		std::map<std::string, Channel> channels;
+		std::map<std::string, Client>	clientsList;
+		std::map<std::string, Channel>	channels;
 
-		std::map<std::string, void(Server::*)(Client&,std::stringstream &msg)> commandsChannels;
-		std::map<std::string, void(Server::*)(Client&,std::stringstream &msg)> commandsAuth;
+		std::map<std::string, void(Server::*)(Client& ,std::stringstream &msg)>					commandsChannels;
+		std::map<std::string, void(Server::*)(Channel &channel, Client &client, bool status)>	commandsMode;
 };
 
 #endif

@@ -6,7 +6,7 @@
 #    By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/07/25 20:18:45 by rlaforge          #+#    #+#              #
-#    Updated: 2023/09/07 16:22:30 by bchabot          ###   ########.fr        #
+#    Updated: 2023/09/07 19:02:12 by bchabot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,6 +21,7 @@ SRCS =	src/main.cpp \
 		src/server/cmds/cmdPart.cpp \
 		src/server/cmds/cmdPrivmsg.cpp \
 		src/server/cmds/cmdTopic.cpp \
+		src/server/cmds/cmdMode.cpp \
 		src/channel/Channel.cpp \
 		src/client/Client.cpp
 

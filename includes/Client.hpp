@@ -17,10 +17,10 @@
 
 class Client{
 	public:
-		Client(int clientFd);	//Constructor
-		Client(const Client &src); //Copy Constructor
-		Client & operator=(const Client &rhs); //Assignement Value Operator
-		~Client();				//Destructor
+		Client(int clientFd);					//Constructor
+		Client(const Client &src); 				//Copy Constructor
+		Client & operator=(const Client &rhs);	//Assignement Value Operator
+		~Client();								//Destructor
 
 		std::string	&getNickname()		{return _nickname;};
 		std::string	&getUsername()		{return _username;};
@@ -34,7 +34,6 @@ class Client{
 		void		setPassword(std::string password);
 		void		setAuth(bool status);
 		void		clearInfo();
-
 
 	private :
 		bool		_authentified;
