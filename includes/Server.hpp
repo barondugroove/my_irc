@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:15 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/07 19:01:37 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/08 17:16:26 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,11 +93,11 @@ class Server {
 		void			cmdTopic(Client &client, std::stringstream &msg);
 		void			cmdMode(Client &client, std::stringstream &msg);
 
-		void			modeI(Channel &channel, Client &client, bool status);
-		void			modeT(Channel &channel, Client &client, bool status);
-		void			modeK(Channel &channel, Client &client, bool status);
-		void			modeO(Channel &channel, Client &client, bool status);
-		void			modeL(Channel &channel, Client &client, bool status);
+		void			modeI(Channel &channel, Client &client, std::string mode);
+		void			modeT(Channel &channel, Client &client, std::string mode);
+		void			modeK(Channel &channel, Client &client, std::string mode);
+		void			modeO(Channel &channel, Client &client, std::string mode);
+		void			modeL(Channel &channel, Client &client, std::string mode);
 
 	private :
 		unsigned short		_port;
@@ -108,8 +108,8 @@ class Server {
 		std::map<std::string, Client>	clientsList;
 		std::map<std::string, Channel>	channels;
 
-		std::map<std::string, void(Server::*)(Client& ,std::stringstream &msg)>					commandsChannels;
-		std::map<std::string, void(Server::*)(Channel &channel, Client &client, bool status)>	commandsMode;
+		std::map<std::string, void(Server::*)(Client& ,std::stringstream &msg)>							commandsChannels;
+		std::map<std::string, void(Server::*)(Channel &channel, Client &client, std::string mode)>		commandsMode;
 };
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 17:10:03 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/07 16:46:46 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/08 17:15:51 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@
 #define ERR_CANNOTSENDTOCHAN(client, channel) (client + " " + channel + " :Cannot send to channel\n")
 #define ERR_USERONCHANNEL(client, nick, channel) (client + " " + nick + " " + channel + " :is already on channel\n")
 #define ERR_PASSWDMISMATCH(client) (client + " :Password incorrect\n")
+#define ERR_UMODEUNKNOWNFLAG(client) (client + " :Unknown MODE flag\n")
 
 //PRIVMSG BUILDERS
 #define CHANNEL_MESSAGES(client, nick, msg) (":" + client + " PRIVMSG " + nick + " :" + msg + "\r\n")
@@ -36,5 +37,11 @@
 
 //SERVER REPLIES
 #define RPL_JOIN(client, channel) (":" + client + " JOIN :" + channel + "\r\n")
+#define RPL_INVITEMODE(client, channel, mode) (client + " " + channel + " " + mode + "i" + "\r\n")
+#define RPL_TOPICMODE(client, channel, mode) (client + " " + channel + " " + mode + "t" + "\r\n")
+#define RPL_KEYMODE(client, channel, mode) (client + " " + channel + " " + mode + "k" + "\r\n")
+#define RPL_OPERATORMODE(client, channel, mode) (client + " " + channel + " " + mode + "o" + "\r\n")
+#define RPL_USERLIMITMODE(client, channel, mode) (client + " " + channel + " " + mode + "o" + "\r\n")
+
 
 #endif

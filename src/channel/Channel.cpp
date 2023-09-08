@@ -101,6 +101,18 @@ void	Channel::setTopic(std::string topic) {
 	_topic = topic;
 }
 
-void	Channel::changeInviteMode(bool status) {
+void	Channel::setInviteMode(bool status) {
 	_inviteMode = status;
+}
+
+void	Channel::setTopicMode(bool status) {
+	_inviteMode = status;
+}
+
+void	Channel::setOperatorMode(bool status) {
+	_inviteMode = status;
+}
+
+void	Channel::setUserLimit(int userLimit) {
+	_userLimit = userLimit;
 }
