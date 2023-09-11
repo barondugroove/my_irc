@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 17:10:03 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/08 17:15:51 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/08 17:25:57 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,6 @@
 #define RPL_TOPICMODE(client, channel, mode) (client + " " + channel + " " + mode + "t" + "\r\n")
 #define RPL_KEYMODE(client, channel, mode) (client + " " + channel + " " + mode + "k" + "\r\n")
 #define RPL_OPERATORMODE(client, channel, mode) (client + " " + channel + " " + mode + "o" + "\r\n")
-#define RPL_USERLIMITMODE(client, channel, mode) (client + " " + channel + " " + mode + "o" + "\r\n")
-
+#define RPL_USERLIMITMODE(client, channel, mode) (client + " " + channel + " " + mode + "l" + "\r\n")
 
 #endif

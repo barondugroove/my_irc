@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:06 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/08 17:16:07 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/11 16:06:35 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -237,15 +237,16 @@ Server::Server(unsigned short port, std::string password) : _port(port), _passwo
 	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("KICK", &Server::cmdKick));
 	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("INVITE", &Server::cmdInvite));
 	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("TOPIC", &Server::cmdTopic));
+	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("MODE", &Server::cmdMode));
 	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("PASS", &Server::cmdPass));
 	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("NICK", &Server::cmdNick));
 	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("USER", &Server::cmdUser));
 
-	commandsMode.insert(std::pair<std::string, void(Server::*)(Channel &channel, Client &client, std::string mode)>("i", &Server::modeI));
-	commandsMode.insert(std::pair<std::string, void(Server::*)(Channel &channel, Client &client, std::string mode)>("t", &Server::modeT));
-	commandsMode.insert(std::pair<std::string, void(Server::*)(Channel &channel, Client &client, std::string mode)>("k", &Server::modeK));
-	commandsMode.insert(std::pair<std::string, void(Server::*)(Channel &channel, Client &client, std::string mode)>("o", &Server::modeO));
-	commandsMode.insert(std::pair<std::string, void(Server::*)(Channel &channel, Client &client, std::string mode)>("l", &Server::modeL));
+	commandsMode.insert(std::pair<std::string, void(Server::*)(Channel &channel, Client &client, std::stringstream &msg)>("i", &Server::modeI));
+	commandsMode.insert(std::pair<std::string, void(Server::*)(Channel &channel, Client &client, std::stringstream &msg)>("t", &Server::modeT));
+	commandsMode.insert(std::pair<std::string, void(Server::*)(Channel &channel, Client &client, std::stringstream &msg)>("k", &Server::modeK));
+	commandsMode.insert(std::pair<std::string, void(Server::*)(Channel &channel, Client &client, std::stringstream &msg)>("o", &Server::modeO));
+	commandsMode.insert(std::pair<std::string, void(Server::*)(Channel &channel, Client &client, std::stringstream &msg)>("l", &Server::modeL));
 
 
 	std::cout << std::endl << "All good!" << std::endl << "port    : " << _port << std::endl << "password: " << _password << std::endl;

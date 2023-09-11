@@ -15,12 +15,18 @@
 
 Channel::Channel(std::string name, Client &channelCreator) : _channelName(name) {
 	std::cout<< "Channel Constructor called"<< std::endl;
-	addUser(channelCreator.getNickname(), channelCreator);
-	_operator.push_back(channelCreator.getNickname());
+	_userLimit = 1000;
 	_inviteMode = false;
 	_topicMode = false;
 	_passwordMode = false;
-	_userLimit = 1000;
+	addUser(channelCreator.getNickname(), channelCreator);
+	_operator.push_back(channelCreator.getNickname());
+
+	for (std::map<std::string, Client*>::iterator it = _members.begin(); it != _members.end(); it++)
+		std::cout << "member is : " << it->first << std::endl;
+		
+	for (std::vector<std::string>::iterator it = _operator.begin(); it != _operator.end(); it++)
+		std::cout << "_operator is : " << *it << std::endl;
 	return;
 }
 
@@ -64,37 +70,44 @@ void	Channel::sendMessageToMember(std::map<std::string, Client*>::iterator it, s
 	send(it->second->getUserFd(), msg.c_str(), msg.size(), 0);
 }
 
-bool	Channel::isUserMember(std::string &nickName) {
-	std::map<std::string, Client*>::iterator it = _members.find(nickName);
+bool	Channel::isUserMember(std::string &nickname) {
+	std::map<std::string, Client*>::iterator it = _members.find(nickname);
 	if (it == _members.end())
 		return false;
 	return true;
 }
 
-bool	Channel::isUserOperator(std::string &nickName) {
-	std::vector<std::string>::iterator it = std::find(_operator.begin(), _operator.end(), nickName);
+bool	Channel::isUserOperator(std::string &nickname) {
+	std::vector<std::string>::iterator it = std::find(_operator.begin(), _operator.end(), nickname);
 	if (it == _operator.end())
 		return false;
 	return true;
 }
 
-void	Channel::eraseUser(std::string &nickName) {
-	std::string msg = nickName + " leave channel " + this->_channelName + "\n";
-	sendMessageToAllMembers(msg, nickName);
-	_members.erase(_members.find(nickName));
+void	Channel::eraseUser(std::string &nickname) {
+	std::string msg = nickname + " leave channel " + this->_channelName + "\n";
+	sendMessageToAllMembers(msg, nickname);
+	_members.erase(_members.find(nickname));
 }
 
-void	Channel::addUser(std::string &nickName, Client &client) {
+void	Channel::addUser(std::string &nickname, Client &client) {
 	if ((int)_members.size() < _userLimit) {
-		std::cout << "User " << nickName << " added to " << this->_channelName << std::endl;
-		_members.insert(std::pair<std::string, Client*>(nickName, &client));
+		std::cout << "User " << nickname << " added to " << this->_channelName << std::endl;
+		_members.insert(std::pair<std::string, Client*>(nickname, &client));
 	}
 	else
 		send(client.getUserFd(), "Cannot join channel.\n", 21, 0);
 }
 
-void	Channel::setOperator(std::string &nickname) {
+void	Channel::addOperator(std::string &nickname) {
 	_operator.push_back(nickname);
+}
+
+void	Channel::eraseOperator(std::string &nickname) {
+	for (std::vector<std::string>::iterator it = _operator.begin(); it != _operator.end(); it++) {
+		if (*it == nickname)
+			_operator.erase(it);
+	}
 }
 
 void	Channel::setTopic(std::string topic) {
@@ -105,14 +118,18 @@ void	Channel::setInviteMode(bool status) {
 	_inviteMode = status;
 }
 
-void	Channel::setTopicMode(bool status) {
-	_inviteMode = status;
+void	Channel::setChannelKey(std::string password) {
+	_key = password;
 }
 
-void	Channel::setOperatorMode(bool status) {
-	_inviteMode = status;
+void	Channel::setTopicMode(bool status) {
+	_topicMode = status;
 }
 
 void	Channel::setUserLimit(int userLimit) {
 	_userLimit = userLimit;
+}
+
+void	Channel::setKeyMode(bool status) {
+	_passwordMode = status;	
 }
