@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 18:15:01 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/11 16:40:43 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/12 14:48:51 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void Server::modeI(Channel &channel, Client &client, std::stringstream &msg) {
 	if (mode[0] == '+')
 		status = true;
 	channel.setInviteMode(status);
-	sendMessage(client.getUserFd(), RPL_INVITEMODE(client.getNickname(), channel.getChannelName(), mode));
+	sendMessage(client.getUserFd(), RPL_MODE(client.getNickname(), channel.getChannelName(), mode));
 	return ;
 }
 
@@ -34,7 +34,7 @@ void Server::modeT(Channel &channel, Client &client, std::stringstream &msg) {
 	if (mode[0] == '+')
 		status = true;
 	channel.setTopicMode(status);
-	sendMessage(client.getUserFd(), RPL_TOPICMODE(client.getNickname(), channel.getChannelName(), mode));
+	sendMessage(client.getUserFd(), RPL_MODE(client.getNickname(), channel.getChannelName(), mode));
 	return ;
 }
 
@@ -53,7 +53,7 @@ void Server::modeK(Channel &channel, Client &client, std::stringstream &msg) {
 		channel.setKeyMode(false);
 		channel.setChannelKey(password);
 	}
-	sendMessage(client.getUserFd(), RPL_KEYMODE(client.getNickname(), channel.getChannelName(), mode));
+	sendMessage(client.getUserFd(), RPL_MODE(client.getNickname(), channel.getChannelName(), mode));
 	return ;
 }
 
@@ -67,7 +67,7 @@ void Server::modeO(Channel &channel, Client &client, std::stringstream &msg) {
 		channel.addOperator(nickname);
 	else
 		channel.eraseOperator(nickname);
-	sendMessage(client.getUserFd(), RPL_OPERATORMODE(client.getNickname(), channel.getChannelName(), mode));
+	sendMessage(client.getUserFd(), RPL_MODE(client.getNickname(), channel.getChannelName(), mode));
 	return ;
 }
 
@@ -81,7 +81,7 @@ void Server::modeL(Channel &channel, Client &client, std::stringstream &msg) {
 	msg >> nbr;
 	userLimit = atoi(nbr.c_str());
 	channel.setUserLimit(userLimit);
-	sendMessage(client.getUserFd(), RPL_OPERATORMODE(client.getNickname(), channel.getChannelName(), mode));
+	sendMessage(client.getUserFd(), RPL_MODE(client.getNickname(), channel.getChannelName(), mode));
 	return ;
 }
 

@@ -22,11 +22,6 @@ Channel::Channel(std::string name, Client &channelCreator) : _channelName(name) 
 	addUser(channelCreator.getNickname(), channelCreator);
 	_operator.push_back(channelCreator.getNickname());
 
-	for (std::map<std::string, Client*>::iterator it = _members.begin(); it != _members.end(); it++)
-		std::cout << "member is : " << it->first << std::endl;
-		
-	for (std::vector<std::string>::iterator it = _operator.begin(); it != _operator.end(); it++)
-		std::cout << "_operator is : " << *it << std::endl;
 	return;
 }
 
@@ -54,9 +49,6 @@ Channel::~Channel(void) {
 	return;
 }
 
-bool	Channel::isChannelFull() {
-	return (_userLimit - _members.size()) >= 1;
-}
 
 void	Channel::sendMessageToAllMembers(std::string msg, std::string nickname) {
 	std::map<std::string, Client*>::iterator it = _members.begin();
@@ -66,8 +58,13 @@ void	Channel::sendMessageToAllMembers(std::string msg, std::string nickname) {
 	}
 }
 
-void	Channel::sendMessageToMember(std::map<std::string, Client*>::iterator it, std::string msg) {
-	send(it->second->getUserFd(), msg.c_str(), msg.size(), 0);
+void	Channel::sendMessageToMember(Client &client, std::string msg) {
+	std::cout << "message to member " << client.getNickname() << " fd[" << client.getUserFd() << "] : " << msg; 
+	send(client.getUserFd(), msg.c_str(), msg.size(), 0);
+}
+
+bool	Channel::isChannelFull() {
+	return (_userLimit - _members.size()) >= 1;
 }
 
 bool	Channel::isUserMember(std::string &nickname) {
@@ -85,9 +82,8 @@ bool	Channel::isUserOperator(std::string &nickname) {
 }
 
 void	Channel::eraseUser(std::string &nickname) {
-	std::string msg = nickname + " leave channel " + this->_channelName + "\n";
-	sendMessageToAllMembers(msg, nickname);
 	_members.erase(_members.find(nickname));
+	sendMessageToAllMembers(RPL_PART(nickname, _channelName), nickname);
 }
 
 void	Channel::addUser(std::string &nickname, Client &client) {
@@ -96,7 +92,7 @@ void	Channel::addUser(std::string &nickname, Client &client) {
 		_members.insert(std::pair<std::string, Client*>(nickname, &client));
 	}
 	else
-		send(client.getUserFd(), "Cannot join channel.\n", 21, 0);
+		sendMessageToMember(client, ERR_CHANNELISFULL(nickname, _channelName));
 }
 
 void	Channel::addOperator(std::string &nickname) {
@@ -114,16 +110,8 @@ void	Channel::setTopic(std::string topic) {
 	_topic = topic;
 }
 
-void	Channel::setInviteMode(bool status) {
-	_inviteMode = status;
-}
-
 void	Channel::setChannelKey(std::string password) {
 	_key = password;
-}
-
-void	Channel::setTopicMode(bool status) {
-	_topicMode = status;
 }
 
 void	Channel::setUserLimit(int userLimit) {
@@ -132,4 +120,12 @@ void	Channel::setUserLimit(int userLimit) {
 
 void	Channel::setKeyMode(bool status) {
 	_passwordMode = status;	
+}
+
+void	Channel::setTopicMode(bool status) {
+	_topicMode = status;
+}
+
+void	Channel::setInviteMode(bool status) {
+	_inviteMode = status;
 }

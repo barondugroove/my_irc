@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:17:57 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/08 15:59:52 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/12 18:09:38 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ void Server::cmdPart(Client &client, std::stringstream &msg) {
 	}
 	if (it->second.isUserMember(client.getNickname())) {
 		it->second.eraseUser(client.getNickname());
+		sendMessage(client.getUserFd(), RPL_PART(client.getNickname(), it->first));
 		if (it->second.getUserCount() == 0)
 			eraseChannel(it);
 	}

@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:06 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/11 16:06:35 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/12 17:52:38 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,7 @@ bool checkNickname(std::string &test) {
 }
 
 void Server::sendMessage(const int &fd, std::string msg) {
+	std::cout << "message to client fd[" << fd << "] : " << msg; 
 	send(fd, msg.c_str(), msg.size(), 0);
 }
 

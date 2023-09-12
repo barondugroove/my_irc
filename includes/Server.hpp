@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:15 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/11 15:38:51 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/12 17:19:43 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,7 @@ class Server {
 		std::map<std::string, Client>	clientsList;
 		std::map<std::string, Channel>	channels;
 
-		std::map<std::string, void(Server::*)(Client& ,std::stringstream &msg)>							commandsChannels;
+		std::map<std::string, void(Server::*)(Client& ,std::stringstream &msg)>									commandsChannels;
 		std::map<std::string, void(Server::*)(Channel &channel, Client &client, std::stringstream &msg)>		commandsMode;
 };
 
