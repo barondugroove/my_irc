@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdMode.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 18:15:01 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/12 14:48:51 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/13 16:40:31 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,12 +46,12 @@ void Server::modeK(Channel &channel, Client &client, std::stringstream &msg) {
 	msg >> password;
 
 	if (mode[0] == '+') {
-		channel.setKeyMode(true);
-		channel.setChannelKey("");
+		channel.setPassMode(true);
+		channel.setChannelPass("");
 	}
 	else {
-		channel.setKeyMode(false);
-		channel.setChannelKey(password);
+		channel.setPassMode(false);
+		channel.setChannelPass(password);
 	}
 	sendMessage(client.getUserFd(), RPL_MODE(client.getNickname(), channel.getChannelName(), mode));
 	return ;

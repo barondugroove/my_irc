@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdPrivmsg.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:17:37 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/07 18:11:07 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/15 23:09:25 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,8 @@ void Server::cmdPrivMsg(Client &client, std::stringstream &msg) {
 	}
 	else {
 		std::map<std::string, Client>::iterator it = clientsList.find(args);
-		if (it != clientsList.end()) {
+		if (it != clientsList.end())
 			sendMessage(it->second.getUserFd(), USER_MESSAGES(client.getNickname(), text));
-		}
 		else
 			sendMessage(client.getUserFd(), "Cannot send message to user " + args + '\n');
 	}

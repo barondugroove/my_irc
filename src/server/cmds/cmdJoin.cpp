@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdJoin.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:14:38 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/12 18:06:16 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/13 17:14:22 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ void Server::cmdJoin(Client &client, std::stringstream &msg) {
 		sendMessage(client.getUserFd(), RPL_JOIN(client.getNickname(), channelName));
 		return ;
 	}
-	std::cout << "channelName is : " << it->first << std::endl;
 
 	if (it->second.isChannelFull()) {
 		std::cout << client.getNickname() << " can not join channel " << channelName << std::endl;

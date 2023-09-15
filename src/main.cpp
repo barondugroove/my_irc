@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/21 16:41:57 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/11 15:03:08 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/13 16:20:59 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ void	checkPort(char *portStr) {
 		return ; // Port is valid
 	else
 		throw Server::PortNotNumberException();
-	return ;
 }
 
 bool	checkPassword(char *password) {

@@ -34,7 +34,7 @@ Channel & Channel::operator=(const Channel &rhs) {
 		this->_channelName = rhs._channelName;
 		this->_members = rhs._members;
 		this->_operator = rhs._operator;
-		this->_key = rhs._key;
+		this->_password = rhs._password;
 
 		this->_inviteMode = rhs._inviteMode;
 		this->_topicMode = rhs._topicMode;
@@ -110,16 +110,16 @@ void	Channel::setTopic(std::string topic) {
 	_topic = topic;
 }
 
-void	Channel::setChannelKey(std::string password) {
-	_key = password;
+void	Channel::setChannelPass(std::string password) {
+	_password = password;
 }
 
 void	Channel::setUserLimit(int userLimit) {
 	_userLimit = userLimit;
 }
 
-void	Channel::setKeyMode(bool status) {
-	_passwordMode = status;	
+void	Channel::setPassMode(bool status) {
+	_passwordMode = status;
 }
 
 void	Channel::setTopicMode(bool status) {

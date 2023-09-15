@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/29 14:26:42 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/12 14:39:48 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/13 16:40:31 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,10 @@
 
 class Channel {
 	public:
-		Channel(std::string name, Client &channelCreator);		//Constructor
-		Channel(const Channel &src); //Copy Constructor
-		Channel & operator=(const Channel &rhs); //Assignement Value Operator
-		~Channel();												//Destructor
+		Channel(std::string name, Client &channelCreator);	//Constructor
+		Channel(const Channel &src); 						//Copy Constructor
+		Channel & operator=(const Channel &rhs); 			//Assignement Value Operator
+		~Channel();											//Destructor
 
 		std::string getChannelName() const	{return _channelName;};
 		std::string	&getTopic()				{return _topic;};
@@ -33,11 +33,11 @@ class Channel {
 		int			getUserCount()			{return _members.size();};
 
 		void		setTopic(std::string topic);
-		void		setChannelKey(std::string password);
+		void		setChannelPass(std::string password);
 		void		setInviteMode(bool status);
 		void		setTopicMode(bool status);
 		void		setUserLimit(int userLimit);
-		void		setKeyMode(bool status);
+		void		setPassMode(bool status);
 
 		bool		isChannelFull();
 		bool		isUserMember(std::string &nickName);
@@ -56,7 +56,7 @@ class Channel {
 	private :
 		std::string						_channelName;
 		std::string						_topic;
-		std::string						_key;
+		std::string						_password;
 
 		std::map<std::string, Client*>	_members;
 		std::vector<std::string>		_operator;
