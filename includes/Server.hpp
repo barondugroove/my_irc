@@ -6,7 +6,7 @@
 /*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:15 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/18 16:07:13 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/18 17:18:38 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ class Server {
 		void			handleClientMsg(Client &Client, std::string msg);
 		void			eraseChannel(std::map<std::string, Channel>::iterator it);
 		void			sendMessage(const int &fd, std::string msg);
-
+		void			closeFds();
 
 		void			cmdPass(Client &unauthClient, std::stringstream &msg);
 		void			cmdNick(Client &unauthClient, std::stringstream &msg);

@@ -6,7 +6,7 @@
 /*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:06 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/18 15:52:34 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/18 17:45:30 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,10 @@ const char* Server::EpollControlException::what() const throw() {
 
 void	exitProgram(int signal) {
 	if (signal == SIGINT)
+	{
+		std::cout << "PROUT, STOP LE RUNNING\n"; 
 		running = false;
+	}
 }
 
 bool checkNickname(std::string &test) {
@@ -162,13 +165,14 @@ void	Server::run(int _serverSocket)
 
 	initEpoll(serverEvents);
 	signal(SIGINT, exitProgram);
-	while (running)
+	while (1)
 	{
 		// CREATING CLIENTS EPOLL EVENT STRUCT
 		struct epoll_event	clientsEvents[clientMax + 1];
 		int clientNbr = epoll_wait(_epoll_fd, clientsEvents, clientMax + 1, -1);
-		if (clientNbr == -1)
-			throw Server::EpollWaitException();
+
+		if (clientNbr == -1 || !running)
+			break;
 
 		// ITERATE ON ALL CONNECTED CLIENTS FDS
 		for (int i = 0; i < clientNbr; ++i)
@@ -215,6 +219,11 @@ void	Server::run(int _serverSocket)
 				listenClient(it->second, fd);
 		}
 	}
+
+	std::cout << "\n\n PROUT \n\n";
+	close(_epoll_fd);
+	close(_serverSocket);
+
 }
 
 
@@ -231,8 +240,10 @@ Server::Server(unsigned short port, std::string password) : _port(port), _passwo
 	proto = getprotobyname("tcp");
 	_serverSocket = socket(AF_INET, SOCK_STREAM, proto->p_proto);
 	if (_serverSocket < 0)
+	{
+		close(_serverSocket);
 		throw Server::SocketErrorException();
-
+	}
 	// SETTING SERVER ADDR
 	struct	sockaddr_in serverAddr;
 
@@ -273,5 +284,8 @@ Server::Server(unsigned short port, std::string password) : _port(port), _passwo
 }
 
 Server::~Server(void) {
+
+	close(_serverSocket);
+	close(_epoll_fd);
 	return;
 }
