@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdAuth.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:19:31 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/07 16:51:08 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/18 16:10:15 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void Server::cmdNick(Client &unauthClient, std::stringstream &msg) {
 		return ;
 	}
 
-	if (clientsList.find(nickname) != clientsList.end()) {
+	if (getFdByNickname(nickname) != -1) {
 		sendMessage(unauthClient.getUserFd(), ERR_NICKNAMEINUSE(unauthClient.getNickname(), nickname));
 		return ;
 	}

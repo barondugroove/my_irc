@@ -27,6 +27,8 @@ Client::Client(const Client &src) : _fd(src.getUserFd()) {
 
 Client & Client::operator=(const Client &rhs) {
 	if (this != &rhs) {
+		
+		std::cout<< "Client Copy Constructor called"<< std::endl;
 		this->_authentified = rhs._authentified;
 		this->_nickname = rhs._nickname;
 		this->_username = rhs._username;

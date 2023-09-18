@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:15 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/12 17:19:43 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/18 16:07:13 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,13 +76,15 @@ class Server {
 		void			run(int serverFd);
 		void			initEpoll(struct epoll_event &serverEvents);
 		void			connectClient(struct epoll_event &serverEvents);
-		void			liaiseClient(Client &client, int fd);
+		void			listenClient(Client &client, int fd);
 		void			handleClientMsg(Client &Client, std::string msg);
 		void			eraseChannel(std::map<std::string, Channel>::iterator it);
 		void			sendMessage(const int &fd, std::string msg);
 
+
 		void			cmdPass(Client &unauthClient, std::stringstream &msg);
 		void			cmdNick(Client &unauthClient, std::stringstream &msg);
+		int				getFdByNickname(std::string &nickname);
 		void			cmdUser(Client &unauthClient, std::stringstream &msg);
 
 		void			cmdJoin(Client &client, std::stringstream &msg);
@@ -105,7 +107,7 @@ class Server {
 		int					_serverSocket;
 		int					_epoll_fd;
 
-		std::map<std::string, Client>	clientsList;
+		std::map<int, Client>	clientsList;
 		std::map<std::string, Channel>	channels;
 
 		std::map<std::string, void(Server::*)(Client& ,std::stringstream &msg)>									commandsChannels;

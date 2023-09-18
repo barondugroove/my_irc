@@ -6,7 +6,7 @@
 /*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:06 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/15 23:23:58 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/18 15:52:34 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,7 @@ void Server::handleClientMsg(Client &client, std::string msg) {
 	return ;
 }
 
-void	Server::liaiseClient(Client &client, int fd) {
+void	Server::listenClient(Client &client, int fd) {
 	char msg[512];
 	memset(&msg, 0, sizeof(msg));
 	int bytes_received = recv(fd, msg, sizeof(msg), 0);
@@ -128,43 +128,12 @@ void	Server::liaiseClient(Client &client, int fd) {
 		if (epoll_ctl(_epoll_fd, EPOLL_CTL_DEL, fd, NULL) == -1)
 			throw Server::EpollControlException();
 		close(fd);
-		this->clientsList.erase(client.getNickname());
+		this->clientsList.erase(client.getUserFd());
 	}
 	else
 		handleClientMsg(client, msg);
 }
 
-
-
-
-
-
-
-
-
-
-
-void	Server::connectClient(struct epoll_event &serverEvents) {
-	// CREATE CLIENT FD
-	struct	sockaddr_in clientAddr;
-
-	socklen_t addrlen = sizeof(clientAddr);
-	int clientFd = accept(_serverSocket, (struct sockaddr *)&clientAddr, &addrlen);
-	if (clientFd < 0)
-		throw Server::AcceptException();
-	fcntl(clientFd, F_SETFL, O_NONBLOCK); // A VERIFIER
-
-	// ADD CLIENT FD TO EPOLL
-	serverEvents.data.fd = clientFd;
-	serverEvents.events = EPOLLIN | EPOLLET;
-	if (epoll_ctl(_epoll_fd, EPOLL_CTL_ADD, clientFd, &serverEvents) == -1)
-		throw Server::EpollControlException();
-
-	// CREATE CLIENT OBJECT AND ADD TO LIST
-	Client newClient(clientFd);
-	this->clientsList.insert(std::pair<std::string, Client>("", newClient));
-	std::cout << "New client connected" << std::endl;
-}
 
 
 
@@ -176,7 +145,7 @@ void	Server::initEpoll(struct epoll_event &serverEvents) {
 
 	// ADDING SERVER FD TO EPOLL
 	serverEvents.data.fd = _serverSocket;
-	serverEvents.events = EPOLLIN | EPOLLET;
+	serverEvents.events = EPOLLIN;
 	if (epoll_ctl(_epoll_fd, EPOLL_CTL_ADD, _serverSocket, &serverEvents) == -1)
 		throw Server::EpollControlException();
 }
@@ -198,15 +167,14 @@ void	Server::run(int _serverSocket)
 		// CREATING CLIENTS EPOLL EVENT STRUCT
 		struct epoll_event	clientsEvents[clientMax + 1];
 		int clientNbr = epoll_wait(_epoll_fd, clientsEvents, clientMax + 1, -1);
-		if (clientNbr == -1) {
+		if (clientNbr == -1)
 			throw Server::EpollWaitException();
-		}
 
 		// ITERATE ON ALL CONNECTED CLIENTS FDS
 		for (int i = 0; i < clientNbr; ++i)
 		{
 			int fd = clientsEvents[i].data.fd;
-			std::map<std::string, Client>::iterator it = this->clientsList.begin(); // SETTING ITERATOR
+			std::map<int, Client>::iterator it = this->clientsList.begin(); // SETTING ITERATOR
 			while (it != this->clientsList.end())
 			{
 				if (it->second.getUserFd() == fd)
@@ -214,9 +182,37 @@ void	Server::run(int _serverSocket)
 				it++;
 			}
 			if (fd == _serverSocket) // SERVER ACTIONS, NEW CONNECTIONS
-				connectClient(serverEvents);
+			{
+
+
+
+
+					// CREATE CLIENT FD
+	struct	sockaddr_in clientAddr;
+
+	socklen_t addrlen = sizeof(clientAddr);
+	int clientFd = accept(_serverSocket, (struct sockaddr *)&clientAddr, &addrlen);
+	if (clientFd < 0)
+		throw Server::AcceptException();
+	fcntl(clientFd, F_SETFL, O_NONBLOCK); // A VERIFIER
+
+	// ADD CLIENT FD TO EPOLL
+	serverEvents.data.fd = clientFd;
+	serverEvents.events = EPOLLIN;
+	if (epoll_ctl(_epoll_fd, EPOLL_CTL_ADD, clientFd, &serverEvents) == -1)
+		throw Server::EpollControlException();
+
+	// CREATE CLIENT OBJECT AND ADD TO LIST
+	Client newClient(clientFd);
+	this->clientsList.insert(std::pair<int, Client>(clientFd, newClient));
+	std::cout << "New client " << newClient.getUserFd() << " connected" << std::endl;
+
+
+	
+
+			}
 			else // CLIENT ACTIONS
-				liaiseClient(it->second, fd);
+				listenClient(it->second, fd);
 		}
 	}
 }

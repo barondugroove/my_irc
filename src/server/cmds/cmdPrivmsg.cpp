@@ -6,11 +6,20 @@
 /*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:17:37 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/15 23:09:25 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/18 16:09:32 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/Server.hpp"
+
+int	Server::getFdByNickname(std::string &nickname) {
+	std::map<int, Client>::iterator it = clientsList.begin();
+	for (; it != clientsList.end(); it++) {
+		if (nickname == it->second.getNickname())
+			return it->second.getUserFd();
+	}
+	return -1;
+}
 
 void Server::cmdPrivMsg(Client &client, std::stringstream &msg) {
 	std::string			args;
@@ -32,8 +41,8 @@ void Server::cmdPrivMsg(Client &client, std::stringstream &msg) {
 		else
 			sendMessage(client.getUserFd(), "Cannot send message to channel " + args + '\n');
 	}
-	else {
-		std::map<std::string, Client>::iterator it = clientsList.find(args);
+	else if (int fd = getFdByNickname(args) != -1) {
+		std::map<int, Client>::iterator it = clientsList.find(fd);
 		if (it != clientsList.end())
 			sendMessage(it->second.getUserFd(), USER_MESSAGES(client.getNickname(), text));
 		else
