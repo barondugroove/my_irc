@@ -3,15 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   define.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 17:10:03 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/12 18:06:13 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/18 17:57:00 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef DEFINE_HPP
 #define DEFINE_HPP
+
+//MAX CLIENTS
+#define MAXCLIENTS 1000
 
 //ERROR MESSAGES
 #define ERR_NOTREGISTERED(client) (client + " :You have not registered\n")

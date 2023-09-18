@@ -6,7 +6,7 @@
 /*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:06 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/18 17:53:15 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/18 17:59:08 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,12 +152,6 @@ void	Server::initEpoll(struct epoll_event &serverEvents) {
 
 void	Server::run(int _serverSocket)
 {
-
-
-
-	int clientMax = 64;
-
-
 	struct epoll_event	serverEvents;
 
 	initEpoll(serverEvents);
@@ -165,9 +159,10 @@ void	Server::run(int _serverSocket)
 	while (1)
 	{
 		// CREATING CLIENTS EPOLL EVENT STRUCT
-		struct epoll_event	clientsEvents[clientMax + 1];
-		int clientNbr = epoll_wait(_epoll_fd, clientsEvents, clientMax + 1, -1);
+		struct epoll_event	clientsEvents[MAXCLIENTS + 1];
+		int clientNbr = epoll_wait(_epoll_fd, clientsEvents, MAXCLIENTS + 1, -1);
 
+		// STOP THE PROGRAM IF WAIT ERROR OR SIGINT
 		if (clientNbr == -1 || !running)
 			break;
 
