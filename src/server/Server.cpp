@@ -6,7 +6,7 @@
 /*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:06 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/18 17:45:30 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/18 17:53:15 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,10 +62,7 @@ const char* Server::EpollControlException::what() const throw() {
 
 void	exitProgram(int signal) {
 	if (signal == SIGINT)
-	{
-		std::cout << "PROUT, STOP LE RUNNING\n"; 
 		running = false;
-	}
 }
 
 bool checkNickname(std::string &test) {
@@ -191,7 +188,7 @@ void	Server::run(int _serverSocket)
 
 
 
-					// CREATE CLIENT FD
+	// CREATE CLIENT FD
 	struct	sockaddr_in clientAddr;
 
 	socklen_t addrlen = sizeof(clientAddr);
@@ -219,10 +216,12 @@ void	Server::run(int _serverSocket)
 				listenClient(it->second, fd);
 		}
 	}
-
-	std::cout << "\n\n PROUT \n\n";
 	close(_epoll_fd);
 	close(_serverSocket);
+
+	std::map<int, Client>::iterator it = clientsList.begin();
+	for (; it != clientsList.end(); it++)
+		close(it->first);
 
 }
 
