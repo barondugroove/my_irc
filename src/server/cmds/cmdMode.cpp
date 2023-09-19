@@ -6,7 +6,7 @@
 /*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 18:15:01 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/19 17:30:10 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/19 17:38:09 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,6 @@ void Server::cmdMode(Client &client, std::stringstream &msg) {
 	std::string	mode;
 	std::string arg;
 
-	msg.ignore(512, ' ');
 	std::getline(msg, channelName, ' ');
 	std::getline(msg, mode, ' ');
 	std::getline(msg, arg);
