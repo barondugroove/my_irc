@@ -6,7 +6,7 @@
 /*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:15 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/19 17:31:00 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/19 18:14:09 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,11 +95,11 @@ class Server {
 		void			cmdTopic(Client &client, std::stringstream &msg);
 		void			cmdMode(Client &client, std::stringstream &msg);
 
-		void			modeI(Channel &channel, Client &client, std::stringstream &msg);
-		void			modeT(Channel &channel, Client &client, std::stringstream &msg);
-		void			modeK(Channel &channel, Client &client, std::stringstream &msg);
-		void			modeO(Channel &channel, Client &client, std::stringstream &msg);
-		void			modeL(Channel &channel, Client &client, std::stringstream &msg);
+		void			modeI(Channel &channel, Client &client, char mode, std::string arg);
+		void			modeT(Channel &channel, Client &client, char mode, std::string arg);
+		void			modeK(Channel &channel, Client &client, char mode, std::string arg);
+		void			modeO(Channel &channel, Client &client, char mode, std::string arg);
+		void			modeL(Channel &channel, Client &client, char mode, std::string arg);
 
 	private :
 		unsigned short		_port;
@@ -111,7 +111,7 @@ class Server {
 		std::map<std::string, Channel>	channels;
 
 		std::map<std::string, void(Server::*)(Client& ,std::stringstream &msg)>								commandsChannels;
-		std::map<char, void(Server::*)(Channel &channel, Client &client, std::stringstream &msg)>			commandsMode;
+		std::map<char, void(Server::*)(Channel &channel, Client &client, char mode, std::string arg)>		commandsMode;
 };
 
 #endif
