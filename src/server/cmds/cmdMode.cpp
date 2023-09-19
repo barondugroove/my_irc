@@ -6,7 +6,7 @@
 /*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 18:15:01 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/19 17:21:17 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/19 17:30:10 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,7 @@ void Server::cmdMode(Client &client, std::stringstream &msg) {
 		return ;
 	}
 
-	std::map<std::string, void(Server::*)(Channel &channel, Client &client, std::stringstream &msg)>::iterator itMode = commandsMode.find(getString(mode[1]));
+	std::map<char, void(Server::*)(Channel &channel, Client &client, std::stringstream &msg)>::iterator itMode = commandsMode.find(mode[1]);
 	if (itMode == commandsMode.end() || (mode[0] != '+' || mode[0] != '-')) {
 		sendMessage(client.getUserFd(), ERR_UMODEUNKNOWNFLAG(client.getNickname()));
 		return ;
