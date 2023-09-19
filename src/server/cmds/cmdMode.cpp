@@ -6,7 +6,7 @@
 /*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 18:15:01 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/13 16:40:31 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/19 17:21:17 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,19 +88,23 @@ void Server::modeL(Channel &channel, Client &client, std::stringstream &msg) {
 void Server::cmdMode(Client &client, std::stringstream &msg) {
 	std::string	channelName;
 	std::string	mode;
+	std::string arg;
 
 	msg.ignore(512, ' ');
 	std::getline(msg, channelName, ' ');
 	std::getline(msg, mode, ' ');
-	if (mode[0] == '+' || mode[0] == '-')
-		mode.erase(mode.begin());
+	std::getline(msg, arg);
 
-	std::cout << "channel name is : " << channelName << " and mode is : " << mode << "." << std::endl;
 
-	if (channelName.empty() || channelName[0] != '#') {
+
+	std::cout << "channel name is : " << channelName << " and mode is : " << mode << " and agrument is : " << arg << std::endl;
+
+	if (channelName.empty() || mode.empty() || channelName[0] != '#') {
 		sendMessage(client.getUserFd(), ERR_NEEDMOREPARAMS(client.getNickname(), channelName));
 		return ;
 	}
+
+
 
 	std::map<std::string, Channel>::iterator it = channels.find(channelName);
 	if (it == channels.end()) {
@@ -108,8 +112,8 @@ void Server::cmdMode(Client &client, std::stringstream &msg) {
 		return ;
 	}
 
-	std::map<std::string, void(Server::*)(Channel &channel, Client &client, std::stringstream &msg)>::iterator itMode = commandsMode.find(mode);
-	if (itMode == commandsMode.end()) {
+	std::map<std::string, void(Server::*)(Channel &channel, Client &client, std::stringstream &msg)>::iterator itMode = commandsMode.find(getString(mode[1]));
+	if (itMode == commandsMode.end() || (mode[0] != '+' || mode[0] != '-')) {
 		sendMessage(client.getUserFd(), ERR_UMODEUNKNOWNFLAG(client.getNickname()));
 		return ;
 	}
