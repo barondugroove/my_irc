@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/21 16:41:57 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/13 16:20:59 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/19 18:10:37 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,28 +25,34 @@ void	checkPort(char *portStr) {
 		throw Server::PortNotNumberException();
 }
 
-bool	checkPassword(char *password) {
-	if (!password)
+bool	checkPassword(std::string password) {
+	if (password.find(' ') != std::string::npos)
+		return false;
+	if (password.size() < 8)
 		return false;
 	return true;
 }
 
-void	checkInputs(char *port, char *password) {
+bool	checkInputs(char *port, char *password) {
 	checkPort(port);
-	if (!checkPassword(password))
-		std::cout << "C LA MERDE IL FAUT GERER LERREUR DES MDPS!!" << std::endl;
+	if (!checkPassword(password)) {
+		std::cerr << "Error. Password format incorrect." << std::endl;	
+		return false;
+	}
+	return true;
 }
 
 int main(int ac, char **av)
 {
 
 	if (ac != 3 || !av[1] || !av[2]) {
-		std::cout << "Please use the correct format:" << std::endl << "./ircserv <port> <password>" << std::endl;
+		std::cerr << "Error. Please use the correct format:" << std::endl << "./ircserv <port> <password>" << std::endl;
 		return (1);
 	}
 
 	try {
-		checkInputs(av[1], av[2]);
+		if (!checkInputs(av[1], av[2]))
+			return (1);
 		std::cout << "IRC Server"<< std::endl;
 		std::string password = av[2];
 		Server	server(atoi(av[1]), password);

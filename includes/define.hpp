@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   define.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 17:10:03 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/18 17:57:00 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/19 18:28:05 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@
 #define ERR_USERONCHANNEL(client, nick, channel) (client + " " + nick + " " + channel + " :is already on channel\n")
 #define ERR_PASSWDMISMATCH(client) (client + " :Password incorrect\n")
 #define ERR_UMODEUNKNOWNFLAG(client) (client + " :Unknown MODE flag\n")
+#define ERR_ERRONEUSKNAME(client, nickname, name) (client + " " + nickname + " :Erroneus " + name + "\n")
 
 //PRIVMSG BUILDERS
 #define CHANNEL_MESSAGES(client, nick, msg) (":" + client + " PRIVMSG " + nick + " :" + msg + "\r\n")

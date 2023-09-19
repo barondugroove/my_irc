@@ -6,19 +6,19 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:19:31 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/19 15:44:49 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/19 18:24:01 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/Server.hpp"
 
-bool checkName(std::string &test) {
+bool	checkName(std::string &str) {
 	const std::string forbiddenChars = " ,*?!@.";
 
-	if (test.empty() || test[0] == '$' || test[0] == ':' || test[0] == '#' || test[0] == '&')
+	if (str.empty() || str[0] == '$' || str[0] == ':' || str[0] == '#' || str[0] == '&')
 		return false;
-	for (size_t i = 0; i < test.size() - 1; i++) {
-		if (forbiddenChars.find(test[i]) != std::string::npos)
+	for (size_t i = 0; i < str.size() - 1; i++) {
+		if (forbiddenChars.find(str[i]) != std::string::npos)
 			return false;
 	}
 	return true;
@@ -55,9 +55,14 @@ void Server::cmdNick(Client &unauthClient, std::stringstream &msg) {
 		return ;
 	}
 
+	if (!checkName(nickname)) {
+		sendMessage(unauthClient.getUserFd(), unauthClient.getNickname() + " :You may not set NICK before using command PASS\n");
+		return ;
+	}
+
 	if (!unauthClient.isAuth()) {
 		if (unauthClient.getPassword().empty()) {
-			sendMessage(unauthClient.getUserFd(), unauthClient.getNickname() + " :You may not set NICK before using PASS\n");
+			sendMessage(unauthClient.getUserFd(), unauthClient.getNickname() + " :You may not set NICK before using command PASS\n");
 			return ;
 		}
 		unauthClient.setNickname(nickname);
