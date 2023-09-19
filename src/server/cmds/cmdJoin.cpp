@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdJoin.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:14:38 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/13 17:14:22 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/19 15:47:18 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@ void Server::cmdJoin(Client &client, std::stringstream &msg) {
 	std::string	channelName;
 	std::string	key;
 
-	msg.ignore(512, ' ');
 	std::getline(msg, channelName, ' ');
 	std::getline(msg, key);
 

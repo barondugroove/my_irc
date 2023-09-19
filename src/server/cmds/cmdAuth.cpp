@@ -3,20 +3,31 @@
 /*                                                        :::      ::::::::   */
 /*   cmdAuth.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:19:31 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/18 16:10:15 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/19 15:44:49 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/Server.hpp"
 
+bool checkName(std::string &test) {
+	const std::string forbiddenChars = " ,*?!@.";
+
+	if (test.empty() || test[0] == '$' || test[0] == ':' || test[0] == '#' || test[0] == '&')
+		return false;
+	for (size_t i = 0; i < test.size() - 1; i++) {
+		if (forbiddenChars.find(test[i]) != std::string::npos)
+			return false;
+	}
+	return true;
+}
+
 void Server::cmdPass(Client &unauthClient, std::stringstream &msg) {
 	std::string	password;
-
-	msg.ignore(512, ' ');
 	msg >> password;
+
 	if (unauthClient.isAuth()) {
 		sendMessage(unauthClient.getUserFd(), ERR_ALREADYREGISTERED(unauthClient.getNickname()));
 		return ;
@@ -32,8 +43,6 @@ void Server::cmdPass(Client &unauthClient, std::stringstream &msg) {
 
 void Server::cmdNick(Client &unauthClient, std::stringstream &msg) {
 	std::string	nickname;
-
-	msg.ignore(512, ' ');
 	msg >> nickname;
 
 	if (nickname.empty()) {
@@ -62,8 +71,6 @@ void Server::cmdNick(Client &unauthClient, std::stringstream &msg) {
 
 void Server::cmdUser(Client &unauthClient, std::stringstream &msg) {
 	std::string	username;
-
-	msg.ignore(512, ' ');
 	msg >> username;
 
 	if (username.empty()) {

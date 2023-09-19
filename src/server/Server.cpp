@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:06 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/18 17:59:08 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/19 16:46:09 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,18 +65,6 @@ void	exitProgram(int signal) {
 		running = false;
 }
 
-bool checkNickname(std::string &test) {
-	const std::string forbiddenChars = " ,*?!@.";
-
-	if (test.empty() || test[0] == '$' || test[0] == ':' || test[0] == '#' || test[0] == '&')
-		return false;
-	for (size_t i = 0; i < test.size() - 1; i++) {
-		if (forbiddenChars.find(test[i]) != std::string::npos)
-			return false;
-	}
-	return true;
-}
-
 void Server::sendMessage(const int &fd, std::string msg) {
 	std::cout << "message to client fd[" << fd << "] : " << msg; 
 	send(fd, msg.c_str(), msg.size(), 0);
@@ -87,16 +75,17 @@ void	Server::eraseChannel(std::map<std::string, Channel>::iterator it) {
 	channels.erase(it);
 }
 
-void Server::handleClientMsg(Client &client, std::string msg) {
+void	parseClientMsg(std::string &msg) {
+	if (msg[0] == '/')
+		msg.erase(msg.begin());
+	if (msg.find('\r') != std::string::npos)
+		msg.erase(msg.find('\r'));
+	if (msg.find('\n') != std::string::npos)
+		msg.erase(msg.find('\n'));
+}
 
-
-
-
-	//msg.erase(msg.find("\r\n"));
-
-
-
-
+void	Server::handleClientMsg(Client &client, std::string msg) {
+	parseClientMsg(msg);
 	std::stringstream	message(msg);
 	std::string			cmd;
 
@@ -111,8 +100,10 @@ void Server::handleClientMsg(Client &client, std::string msg) {
 	else if (!client.isAuth() && it->first != "PASS" && it->first != "USER"  && it->first != "NICK") {
 		sendMessage(client.getUserFd(), ERR_NOTREGISTERED(client.getNickname()));
 	}
-	else
+	else {
+		message.ignore(512, ' ');
 		(this->*(it->second))(client, message);
+	}
 	return ;
 }
 
@@ -133,9 +124,6 @@ void	Server::listenClient(Client &client, int fd) {
 	else
 		handleClientMsg(client, msg);
 }
-
-
-
 
 void	Server::initEpoll(struct epoll_event &serverEvents) {
 	// CREATE EPOLL FD
@@ -179,33 +167,25 @@ void	Server::run(int _serverSocket)
 			}
 			if (fd == _serverSocket) // SERVER ACTIONS, NEW CONNECTIONS
 			{
+				// CREATE CLIENT FD
+				struct	sockaddr_in clientAddr;
 
+				socklen_t addrlen = sizeof(clientAddr);
+				int clientFd = accept(_serverSocket, (struct sockaddr *)&clientAddr, &addrlen);
+				if (clientFd < 0)
+					throw Server::AcceptException();
+				fcntl(clientFd, F_SETFL, O_NONBLOCK); // A VERIFIER
 
+				// ADD CLIENT FD TO EPOLL
+				serverEvents.data.fd = clientFd;
+				serverEvents.events = EPOLLIN;
+				if (epoll_ctl(_epoll_fd, EPOLL_CTL_ADD, clientFd, &serverEvents) == -1)
+					throw Server::EpollControlException();
 
-
-	// CREATE CLIENT FD
-	struct	sockaddr_in clientAddr;
-
-	socklen_t addrlen = sizeof(clientAddr);
-	int clientFd = accept(_serverSocket, (struct sockaddr *)&clientAddr, &addrlen);
-	if (clientFd < 0)
-		throw Server::AcceptException();
-	fcntl(clientFd, F_SETFL, O_NONBLOCK); // A VERIFIER
-
-	// ADD CLIENT FD TO EPOLL
-	serverEvents.data.fd = clientFd;
-	serverEvents.events = EPOLLIN;
-	if (epoll_ctl(_epoll_fd, EPOLL_CTL_ADD, clientFd, &serverEvents) == -1)
-		throw Server::EpollControlException();
-
-	// CREATE CLIENT OBJECT AND ADD TO LIST
-	Client newClient(clientFd);
-	this->clientsList.insert(std::pair<int, Client>(clientFd, newClient));
-	std::cout << "New client " << newClient.getUserFd() << " connected" << std::endl;
-
-
-	
-
+				// CREATE CLIENT OBJECT AND ADD TO LIST
+				Client newClient(clientFd);
+				this->clientsList.insert(std::pair<int, Client>(clientFd, newClient));
+				std::cout << "New client " << newClient.getUserFd() << " connected" << std::endl;
 			}
 			else // CLIENT ACTIONS
 				listenClient(it->second, fd);
@@ -213,18 +193,10 @@ void	Server::run(int _serverSocket)
 	}
 	close(_epoll_fd);
 	close(_serverSocket);
-
 	std::map<int, Client>::iterator it = clientsList.begin();
 	for (; it != clientsList.end(); it++)
 		close(it->first);
-
 }
-
-
-
-
-
-
 
 Server::Server(unsigned short port, std::string password) : _port(port), _password(password)
 {
@@ -255,16 +227,16 @@ Server::Server(unsigned short port, std::string password) : _port(port), _passwo
 	if (listen(_serverSocket, serverAddr.sin_port) < 0)
 		throw Server::CantListenOnPortException();
 
-	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("/JOIN", &Server::cmdJoin));
-	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("/PART", &Server::cmdPart));
-	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("/PRIVMSG", &Server::cmdPrivMsg));
-	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("/KICK", &Server::cmdKick));
-	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("/INVITE", &Server::cmdInvite));
-	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("/TOPIC", &Server::cmdTopic));
-	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("/MODE", &Server::cmdMode));
-	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("/PASS", &Server::cmdPass));
-	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("/NICK", &Server::cmdNick));
-	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("/USER", &Server::cmdUser));
+	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("JOIN", &Server::cmdJoin));
+	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("PART", &Server::cmdPart));
+	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("PRIVMSG", &Server::cmdPrivMsg));
+	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("KICK", &Server::cmdKick));
+	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("INVITE", &Server::cmdInvite));
+	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("TOPIC", &Server::cmdTopic));
+	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("MODE", &Server::cmdMode));
+	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("PASS", &Server::cmdPass));
+	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("NICK", &Server::cmdNick));
+	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("USER", &Server::cmdUser));
 
 	commandsMode.insert(std::pair<std::string, void(Server::*)(Channel &channel, Client &client, std::stringstream &msg)>("i", &Server::modeI));
 	commandsMode.insert(std::pair<std::string, void(Server::*)(Channel &channel, Client &client, std::stringstream &msg)>("t", &Server::modeT));
@@ -278,8 +250,5 @@ Server::Server(unsigned short port, std::string password) : _port(port), _passwo
 }
 
 Server::~Server(void) {
-
-	close(_serverSocket);
-	close(_epoll_fd);
 	return;
 }
