@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:19:31 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/19 18:31:55 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/19 19:10:26 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,6 @@ void Server::cmdPass(Client &unauthClient, std::stringstream &msg) {
 		sendMessage(unauthClient.getUserFd(), ERR_ALREADYREGISTERED(unauthClient.getNickname()));
 		return ;
 	}
-
 	if (password.empty()) {
 		sendMessage(unauthClient.getUserFd(), ERR_NEEDMOREPARAMS(unauthClient.getNickname(), "PASS"));
 		return ;
@@ -55,16 +54,17 @@ void Server::cmdNick(Client &unauthClient, std::stringstream &msg) {
 		return ;
 	}
 
+	if (unauthClient.getPassword().empty()) {
+		sendMessage(unauthClient.getUserFd(), unauthClient.getNickname() + " :You may not set NICK before using command PASS\n");
+		return ;
+	}
+
 	if (!checkName(nickname)) {
 		sendMessage(unauthClient.getUserFd(), ERR_ERRONEUSNAME(unauthClient.getNickname(), nickname, "nickname\n"));
 		return ;
 	}
 
 	if (!unauthClient.isAuth()) {
-		if (unauthClient.getPassword().empty()) {
-			sendMessage(unauthClient.getUserFd(), unauthClient.getNickname() + " :You may not set NICK before using command PASS\n");
-			return ;
-		}
 		unauthClient.setNickname(nickname);
 		sendMessage(unauthClient.getUserFd(), "Requesting the new nick " + nickname + "\n");
 	}
@@ -78,6 +78,15 @@ void Server::cmdUser(Client &unauthClient, std::stringstream &msg) {
 	std::string	username;
 	msg >> username;
 
+	if (unauthClient.getPassword().empty()) {
+		sendMessage(unauthClient.getUserFd(), unauthClient.getUsername() + " :You may not set USER before using PASS\n");
+		return ;
+	}
+	if (unauthClient.getNickname().empty()) {
+		sendMessage(unauthClient.getUserFd(), unauthClient.getUsername() + " :You may not set USER before using NICK\n");
+		return ;
+	}
+
 	if (username.empty()) {
 		sendMessage(unauthClient.getUserFd(), unauthClient.getUsername() + " :No username given\n");
 		return ;
@@ -89,10 +98,6 @@ void Server::cmdUser(Client &unauthClient, std::stringstream &msg) {
 	}
 
 	if (!unauthClient.isAuth()) {
-		if (unauthClient.getPassword().empty()) {
-			sendMessage(unauthClient.getUserFd(), unauthClient.getUsername() + " :You may not set USER before using PASS\n");
-			return ;
-		}
 		unauthClient.setUsername(username);
 		sendMessage(unauthClient.getUserFd(), "Requesting the new username " + username + "\n");
 		if (unauthClient.getPassword() == _password && !unauthClient.getNickname().empty()) {
