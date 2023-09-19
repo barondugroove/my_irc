@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:19:31 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/19 18:24:01 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/19 18:31:55 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ void Server::cmdNick(Client &unauthClient, std::stringstream &msg) {
 	}
 
 	if (!checkName(nickname)) {
-		sendMessage(unauthClient.getUserFd(), unauthClient.getNickname() + " :You may not set NICK before using command PASS\n");
+		sendMessage(unauthClient.getUserFd(), ERR_ERRONEUSNAME(unauthClient.getNickname(), nickname, "nickname\n"));
 		return ;
 	}
 
@@ -80,6 +80,11 @@ void Server::cmdUser(Client &unauthClient, std::stringstream &msg) {
 
 	if (username.empty()) {
 		sendMessage(unauthClient.getUserFd(), unauthClient.getUsername() + " :No username given\n");
+		return ;
+	}
+
+	if (!checkName(username)) {
+		sendMessage(unauthClient.getUserFd(), ERR_ERRONEUSNAME(unauthClient.getNickname(), username, "username\n"));
 		return ;
 	}
 
