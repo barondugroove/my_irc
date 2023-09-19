@@ -6,7 +6,7 @@
 /*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 18:15:01 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/19 17:38:09 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/19 17:40:45 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,7 @@ void Server::cmdMode(Client &client, std::stringstream &msg) {
 
 
 
-	std::cout << "channel name is : " << channelName << " and mode is : " << mode << " and agrument is : " << arg << std::endl;
+	std::cout << "channel name is : " << channelName << " and mode is : " << mode << " and argument is : " << arg << std::endl;
 
 	if (channelName.empty() || mode.empty() || channelName[0] != '#') {
 		sendMessage(client.getUserFd(), ERR_NEEDMOREPARAMS(client.getNickname(), channelName));
@@ -112,7 +112,7 @@ void Server::cmdMode(Client &client, std::stringstream &msg) {
 	}
 
 	std::map<char, void(Server::*)(Channel &channel, Client &client, std::stringstream &msg)>::iterator itMode = commandsMode.find(mode[1]);
-	if (itMode == commandsMode.end() || (mode[0] != '+' || mode[0] != '-')) {
+	if (itMode == commandsMode.end() || (mode[0] != '+' && mode[0] != '-')) {
 		sendMessage(client.getUserFd(), ERR_UMODEUNKNOWNFLAG(client.getNickname()));
 		return ;
 	}
