@@ -59,12 +59,14 @@ void	Channel::sendMessageToAllMembers(std::string msg, std::string nickname) {
 }
 
 void	Channel::sendMessageToMember(Client &client, std::string msg) {
-	std::cout << "message to member " << client.getNickname() << " fd[" << client.getUserFd() << "] : " << msg; 
+	std::cout << "message to member " << client.getNickname() << " fd[" << client.getUserFd() << "] : " << msg;
 	send(client.getUserFd(), msg.c_str(), msg.size(), 0);
 }
 
 bool	Channel::isChannelFull() {
-	return (_userLimit - _members.size()) >= 1;
+	std::cout << "user limit is : " << _userLimit << " _members size is : " << _members.size() << std::endl;
+	std::cout << "result is : " << ((_userLimit - _members.size()) >= 1) << std::endl;
+	return ((_userLimit - _members.size()) < 1);
 }
 
 bool	Channel::isUserMember(std::string &nickname) {

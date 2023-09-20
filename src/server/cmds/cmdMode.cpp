@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdMode.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 18:15:01 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/20 15:26:54 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/20 16:58:16 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,8 @@ void Server::modeI(Channel &channel, Client &client, char mode, std::string arg)
 		channel.setInviteMode(true);
 	else
 		channel.setInviteMode(false);
-	
-	sendMessage(client.getUserFd(), RPL_MODE(client.getNickname(), channel.getChannelName(), mode));
+
+	sendMessage(client.getUserFd(), RPL_MODE(client.getNickname(), channel.getChannelName(), mode + 'i'));
 	return ;
 }
 
@@ -30,7 +30,7 @@ void Server::modeT(Channel &channel, Client &client, char mode, std::string arg)
 		channel.setTopicMode(true);
 	else
 		channel.setTopicMode(false);
-	sendMessage(client.getUserFd(), RPL_MODE(client.getNickname(), channel.getChannelName(), mode));
+	sendMessage(client.getUserFd(), RPL_MODE(client.getNickname(), channel.getChannelName(), mode + 't'));
 	return ;
 }
 
@@ -44,17 +44,17 @@ void Server::modeK(Channel &channel, Client &client, char mode, std::string arg)
 		channel.setPassMode(false);
 		channel.setChannelPass("");
 	}
-	sendMessage(client.getUserFd(), RPL_MODE(client.getNickname(), channel.getChannelName(), mode));
+	sendMessage(client.getUserFd(), RPL_MODE(client.getNickname(), channel.getChannelName(), mode + 'k'));
 	return ;
 }
 
 void Server::modeO(Channel &channel, Client &client, char mode, std::string arg) {
-	
+
 	if (mode == '+')
 		channel.addOperator(arg);
 	else
 		channel.eraseOperator(arg);
-	sendMessage(client.getUserFd(), RPL_MODE(client.getNickname(), channel.getChannelName(), mode));
+	sendMessage(client.getUserFd(), RPL_MODE(client.getNickname(), channel.getChannelName(), mode + 'o'));
 	return ;
 }
 
@@ -64,7 +64,7 @@ void Server::modeL(Channel &channel, Client &client, char mode, std::string arg)
 
 	userLimit = atoi(arg.c_str());
 	channel.setUserLimit(userLimit);
-	sendMessage(client.getUserFd(), RPL_MODE(client.getNickname(), channel.getChannelName(), mode));
+	sendMessage(client.getUserFd(), RPL_MODE(client.getNickname(), channel.getChannelName(), mode + 'l'));
 	return ;
 }
 
@@ -88,7 +88,7 @@ void Server::cmdMode(Client &client, std::stringstream &msg) {
 	}
 
 	//TOO MUCH PARAMETERS
-	if (arg[2]) {
+	if (mode[2] != '\0') {
 		sendMessage(client.getUserFd(), ERR_TOOMUCHPARAMS(client.getNickname(), channelName));
 		return ;
 	}
