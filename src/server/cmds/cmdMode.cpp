@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdMode.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 18:15:01 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/20 16:58:16 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/20 17:22:41 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,22 +81,45 @@ void Server::cmdMode(Client &client, std::stringstream &msg) {
 
 	std::cout << "channel name is : " << channelName << " and mode is : " << mode << " and argument is : " << arg << std::endl;
 
-	//NOT ENOUGH PARAMETERS
-	if (channelName.empty() || mode.empty() || channelName[0] != '#') {
+	//NO CHANNEL
+	if (channelName.empty() || channelName[0] != '#') {
 		sendMessage(client.getUserFd(), ERR_NEEDMOREPARAMS(client.getNickname(), channelName));
+		return ;
+	}
+
+
+
+
+	//CHANNEL DOES NOT EXIST
+	std::map<std::string, Channel>::iterator it = channels.find(channelName);
+	if (it == channels.end()) {
+		sendMessage(client.getUserFd(), ERR_NOSUCHCHANNEL(client.getNickname(), channelName));
+		return ;
+	}
+
+
+	//PRINT MODE PARAMS
+	if (mode.empty() && arg.empty()) {
+
+		std::string msg = "Active modes : +";
+
+		if(it->second.getInviteMode())
+			msg += 'i';
+
+		if(it->second.getTopicMode())
+			msg += 't';
+
+		if(it->second.getPassMode())
+			msg += 'k';
+
+		msg += "\r\n";
+		sendMessage(client.getUserFd(), msg);
 		return ;
 	}
 
 	//TOO MUCH PARAMETERS
 	if (mode[2] != '\0') {
 		sendMessage(client.getUserFd(), ERR_TOOMUCHPARAMS(client.getNickname(), channelName));
-		return ;
-	}
-
-	//CHANNEL DOES NOT EXIST
-	std::map<std::string, Channel>::iterator it = channels.find(channelName);
-	if (it == channels.end()) {
-		sendMessage(client.getUserFd(), ERR_NOSUCHCHANNEL(client.getNickname(), channelName));
 		return ;
 	}
 

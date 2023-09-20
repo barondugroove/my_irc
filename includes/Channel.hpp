@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/29 14:26:42 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/20 15:04:08 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/20 17:21:37 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,9 @@ class Channel {
 
 		std::string getChannelName() const	{return _channelName;};
 		std::string	&getTopic()				{return _topic;};
+		bool		getInviteMode()			{return _inviteMode;};
 		bool		getTopicMode()			{return _topicMode;};
+		bool		getPassMode()			{return _passwordMode;};
 		int			getUserCount()			{return _members.size();};
 
 		void		setTopic(std::string topic);
