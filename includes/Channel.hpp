@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/29 14:26:42 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/13 16:40:31 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/20 15:04:08 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ class Channel {
 
 		void		addUser(std::string &nickName, Client &client);
 		void		addOperator(std::string &nickName);
+		void		addInvitee(std::string &nickName);
 		void		eraseUser(std::string &nickName);
 		void		eraseOperator(std::string &nickName);
 		void		sendMessageToAllMembers(std::string msg, std::string nickName);

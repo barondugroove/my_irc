@@ -99,6 +99,10 @@ void	Channel::addOperator(std::string &nickname) {
 	_operator.push_back(nickname);
 }
 
+void	Channel::addInvitee(std::string &nickname) {
+	_invitees.push_back(nickname);
+}
+
 void	Channel::eraseOperator(std::string &nickname) {
 	for (std::vector<std::string>::iterator it = _operator.begin(); it != _operator.end(); it++) {
 		if (*it == nickname)

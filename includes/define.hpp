@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   define.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 17:10:03 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/20 15:29:49 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/20 15:32:32 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,5 +44,7 @@
 #define RPL_JOIN(client, channel) (":" + client + " JOIN " + channel + "\r\n")
 #define RPL_PART(client, channel) (":" + client + " PART " + channel + "\r\n")
 #define RPL_MODE(client, channel, mode) (":" + client + " " + channel + " " + mode + "\r\n")
+#define RPL_INVITESNDR(client, invitee, channel) (":" + client + " " + invitee + " " + channel + "\r\n")
+#define RPL_INVITERCVR(client, invitee, channel) (":" + client + " INVITE " + invitee + " :" + channel + "\r\n")
 
 #endif
