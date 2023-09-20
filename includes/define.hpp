@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   define.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 17:10:03 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/19 18:29:52 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/20 15:29:49 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 #define ERR_CHANOPRIVSNEEDED(client, channel) (client + " " + channel + " :You're not channel operator\n")
 #define ERR_NOTONCHANNEL(client, channel) (client + " " + channel + " :You're not on that channel\n")
 #define ERR_NEEDMOREPARAMS(client, cmd) (client + " " + cmd + " :Not enough parameters\n")
+#define ERR_TOOMUCHPARAMS(client, cmd) (client + " " + cmd + " :Too much parameters\n")
 #define ERR_ALREADYREGISTERED(client) (client + " :You may not reregister\n")
 #define ERR_NICKNAMEINUSE(client, nick) (client + " " + nick + " :Nickname is already in use\n")
 #define ERR_CHANNELISFULL(client, channel) (client + " " + channel + " :Cannot join channel (+l)\n")
