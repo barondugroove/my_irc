@@ -6,7 +6,7 @@
 /*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 18:15:01 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/20 17:23:29 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/20 23:47:14 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ void Server::cmdMode(Client &client, std::stringstream &msg) {
 
 
 
-	std::cout << "channel name is : " << channelName << " and mode is : " << mode << " and argument is : " << arg << std::endl;
+	std::cout << "channel name is : " << channelName << " , mode is : " << mode << " and argument is : " << arg << std::endl;
 
 	//NO CHANNEL
 	if (channelName.empty() || channelName[0] != '#') {
@@ -101,12 +101,12 @@ void Server::cmdMode(Client &client, std::stringstream &msg) {
 	//PRINT MODE PARAMS
 	if (mode.empty() && arg.empty()) {
 
-		std::string msg = "Active modes : +";
+		std::string msg = "Active modes : ";
 
 		if(it->second.getInviteMode())
-			msg += 'i';
+			msg += "i ";
 		if(it->second.getTopicMode())
-			msg += 't';
+			msg += "t ";
 		if(it->second.getPassMode())
 			msg += 'k';
 
@@ -115,7 +115,7 @@ void Server::cmdMode(Client &client, std::stringstream &msg) {
 		return ;
 	}
 
-	//TOO MUCH PARAMETERS
+	//TOO MUCH MODE PARAMETERS
 	if (mode[2] != '\0') {
 		sendMessage(client.getUserFd(), ERR_TOOMUCHPARAMS(client.getNickname(), channelName));
 		return ;

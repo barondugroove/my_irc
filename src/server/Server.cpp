@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:06 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/19 18:56:17 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/20 23:45:39 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -186,6 +186,7 @@ void	Server::run(int _serverSocket)
 				Client newClient(clientFd);
 				this->clientsList.insert(std::pair<int, Client>(clientFd, newClient));
 				std::cout << "New client " << newClient.getUserFd() << " connected" << std::endl;
+				sendMessage(newClient.getUserFd(), "Use the following commands to sign in : /PASS <password>, /NICK <nickname>, /USER <username>\r\n");
 			}
 			else // CLIENT ACTIONS
 				listenClient(it->second, fd);

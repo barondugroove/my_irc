@@ -3,18 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   cmdInvite.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:15:57 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/20 15:29:14 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/20 23:40:42 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/Server.hpp"
 
 void Server::cmdInvite(Client &client, std::stringstream &msg) {
-	std::string			channel;
-	std::string			user;
+	std::string		channel;
+	std::string		user;
 
 	msg >> channel;
 	msg >> user;
