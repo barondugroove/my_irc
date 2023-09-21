@@ -6,21 +6,21 @@
 /*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 18:15:01 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/21 15:21:55 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/21 16:56:50 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/Server.hpp"
 
-void printModes(int fd) {
+void Server::printModes(int fd, Channel channel) {
 	std::string msg = "Active modes : ";
 
-	if(it->second.getInviteMode())
-		msg += "i ";
-	if(it->second.getTopicMode())
-		msg += "t ";
-	if(it->second.getPassMode())
-		msg += 'k';
+	if(channel.getInviteMode())
+		msg += "Invite ";
+	if(channel.getTopicMode())
+		msg += "Topic ";
+	if(channel.getPassMode())
+		msg += "Password";
 
 	msg += "\r\n";
 	sendMessage(fd, msg);
@@ -51,21 +51,39 @@ void Server::modeT(Channel &channel, Client &client, char mode, std::string arg)
 
 
 
-	// NEED TO CHECK PASSWORD???????????????
+	// NEED TO USE THE CHECKPASSWORD FROM THE MAIN
+
+bool	checkPassworde(std::string password) {
+	if (password.find(' ') != std::string::npos)
+		return false;
+	if (password.size() < 8)
+		return false;
+	return true;
+}
+
 
 void Server::modeK(Channel &channel, Client &client, char mode, std::string arg) {
 
 	if (mode == '+') {
-		channel.setPassMode(true);
-		channel.setChannelPass(arg);
-	}
-	else {
+		if (arg.empty()) {
+			sendMessage(client.getUserFd(), "No password\r\n");
+			return ;
+		}
+		if (checkPassworde(arg)) {
+			channel.setPassMode(true);
+			channel.setChannelPass(arg);
+		} else {
+			sendMessage(client.getUserFd(), "Invalid password\r\n");
+			return ;
+		}
+	} else {
 		channel.setPassMode(false);
 		channel.setChannelPass("");
 	}
 	sendMessage(client.getUserFd(), RPL_MODE(client.getNickname(), channel.getChannelName(), mode + 'k'));
 	return ;
 }
+
 
 void Server::modeO(Channel &channel, Client &client, char mode, std::string arg) {
 
@@ -89,7 +107,7 @@ void Server::modeL(Channel &channel, Client &client, char mode, std::string arg)
 
 	if(userLimit < 1 || userLimit > MAXCLIENTS)
 	{
-		sendMessage(client.getUserFd(), "Need a number between 1 and " + MAXCLIENTS + "\r\n");
+		sendMessage(client.getUserFd(), "Need a number between 1 and " + MAXCLIENTS);
 		return ;
 	}
 
@@ -127,7 +145,7 @@ void Server::cmdMode(Client &client, std::stringstream &msg) {
 
 	//PRINT MODE PARAMS
 	if (mode.empty() && arg.empty()) {
-		printModes(client.getUserFd());
+		printModes(client.getUserFd(), it->second);
 		return ;
 	}
 

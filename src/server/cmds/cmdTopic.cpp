@@ -6,7 +6,7 @@
 /*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:18:27 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/21 15:19:51 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/21 17:01:43 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@ void Server::cmdTopic(Client &client, std::stringstream &msg) {
 	std::string			channel;
 	std::string			text;
 
-	msg.ignore(512, ' ');
 	msg >> channel;
 	std::getline(msg, text);
 
@@ -30,8 +29,8 @@ void Server::cmdTopic(Client &client, std::stringstream &msg) {
 	//COUT
 	std::cout << it->second.getChannelName() << std::endl;
 
-	if (text.empty()) {
-		sendMessage(client.getUserFd(), "Topic for " + channel + " is " + it->second.getTopic() + "\n");
+	if (text.empty() && it->second.getTopicMode()) {
+		sendMessage(client.getUserFd(), "Topic for " + channel + " is :" + it->second.getTopic() + "\n");
 		return ;
 	}
 

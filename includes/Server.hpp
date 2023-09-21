@@ -6,7 +6,7 @@
 /*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:15 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/21 13:49:04 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/21 16:38:13 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,7 @@ class Server {
 		void			cmdTopic(Client &client, std::stringstream &msg);
 		void			cmdMode(Client &client, std::stringstream &msg);
 
+		void			printModes(int fd, Channel channel);
 		void			modeI(Channel &channel, Client &client, char mode, std::string arg);
 		void			modeT(Channel &channel, Client &client, char mode, std::string arg);
 		void			modeK(Channel &channel, Client &client, char mode, std::string arg);
