@@ -6,7 +6,7 @@
 /*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:15:57 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/20 23:40:42 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/21 15:21:22 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ void Server::cmdInvite(Client &client, std::stringstream &msg) {
 	}
 	
 	std::map<int, Client>::iterator itClient = clientsList.find(client.getUserFd());
+	//COUT
 	std::cout << "ismember is : " << itChannel->second.isUserMember(client.getNickname()) << std::endl;
 	std::cout << "it is : " << itClient->second.getNickname() << std::endl;
 	if (itChannel->second.isUserMember(client.getNickname()) || itClient == clientsList.end()) {

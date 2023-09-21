@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdTopic.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:18:27 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/07 16:18:57 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/21 15:19:51 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,9 @@ void Server::cmdTopic(Client &client, std::stringstream &msg) {
 		sendMessage(client.getUserFd(), ERR_NOSUCHCHANNEL(client.getNickname(), channel));
 		return ;
 	}
+
+
+	//COUT
 	std::cout << it->second.getChannelName() << std::endl;
 
 	if (text.empty()) {
