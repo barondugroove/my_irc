@@ -6,7 +6,7 @@
 /*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 18:15:01 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/20 23:47:14 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/21 13:29:06 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,9 +63,31 @@ void Server::modeL(Channel &channel, Client &client, char mode, std::string arg)
 	int	userLimit;
 
 	userLimit = atoi(arg.c_str());
+
+	if(userLimit < 1 || userLimit > MAXCLIENTS)
+	{
+		sendMessage(client.getUserFd(), "Need a number between 1 and " + MAXCLIENTS + "\r\n");
+		return ;
+	}
+
+
 	channel.setUserLimit(userLimit);
 	sendMessage(client.getUserFd(), RPL_MODE(client.getNickname(), channel.getChannelName(), mode + 'l'));
 	return ;
+}
+
+void printModes(int fd) {
+	std::string msg = "Active modes : ";
+
+	if(it->second.getInviteMode())
+		msg += "i ";
+	if(it->second.getTopicMode())
+		msg += "t ";
+	if(it->second.getPassMode())
+		msg += 'k';
+
+	msg += "\r\n";
+	sendMessage(fd, msg);
 }
 
 void Server::cmdMode(Client &client, std::stringstream &msg) {
@@ -77,8 +99,6 @@ void Server::cmdMode(Client &client, std::stringstream &msg) {
 	std::getline(msg, mode, ' ');
 	std::getline(msg, arg);
 
-
-
 	std::cout << "channel name is : " << channelName << " , mode is : " << mode << " and argument is : " << arg << std::endl;
 
 	//NO CHANNEL
@@ -87,9 +107,6 @@ void Server::cmdMode(Client &client, std::stringstream &msg) {
 		return ;
 	}
 
-
-
-
 	//CHANNEL DOES NOT EXIST
 	std::map<std::string, Channel>::iterator it = channels.find(channelName);
 	if (it == channels.end()) {
@@ -97,21 +114,9 @@ void Server::cmdMode(Client &client, std::stringstream &msg) {
 		return ;
 	}
 
-
 	//PRINT MODE PARAMS
 	if (mode.empty() && arg.empty()) {
-
-		std::string msg = "Active modes : ";
-
-		if(it->second.getInviteMode())
-			msg += "i ";
-		if(it->second.getTopicMode())
-			msg += "t ";
-		if(it->second.getPassMode())
-			msg += 'k';
-
-		msg += "\r\n";
-		sendMessage(client.getUserFd(), msg);
+		printModes(client.getUserFd());
 		return ;
 	}
 
@@ -141,4 +146,3 @@ void Server::cmdMode(Client &client, std::stringstream &msg) {
 	}
 	((*this).*itMode->second)(it->second, client, mode[0], arg);
 }
-
