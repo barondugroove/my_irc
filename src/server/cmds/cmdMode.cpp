@@ -6,7 +6,7 @@
 /*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 18:15:01 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/22 13:37:54 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/22 22:09:59 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,10 @@ void Server::modeT(Channel &channel, Client &client, char mode, std::string arg)
 	if (mode == '+')
 		channel.setTopicMode(true);
 	else
+	{
+		channel.setTopic("");
 		channel.setTopicMode(false);
+	}
 	sendMessage(client.getUserFd(), RPL_MODE(client.getNickname(), channel.getChannelName(), mode + 't'));
 	return ;
 }

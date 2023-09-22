@@ -6,7 +6,7 @@
 /*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:18:27 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/22 22:03:34 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/22 22:08:33 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,8 @@ void Server::cmdTopic(Client &client, std::stringstream &msg) {
 	}
 	else {
 		it->second.setTopic(text);
+
+		//COUT    sendMessageToAllMembers not working
 		std::string msg = "Topic for " + channel + " has been changed to " + it->second.getTopic() + "\n";
 		it->second.sendMessageToAllMembers(msg, client.getNickname());
 	}
