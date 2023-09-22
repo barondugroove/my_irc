@@ -6,7 +6,7 @@
 /*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:06 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/20 23:45:39 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/22 22:20:26 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,6 +118,21 @@ void	Server::listenClient(Client &client, int fd) {
 		std::cout << "Client disconnected" << std::endl;
 		if (epoll_ctl(_epoll_fd, EPOLL_CTL_DEL, fd, NULL) == -1)
 			throw Server::EpollControlException();
+
+
+
+
+		// Does it marche, my big pote?
+		for (size_t i = 0; i < channels.size(); i++)
+		{
+			if (channels[i].isUserMember(client))
+				channels[i].eraseUser(client);
+		}
+	
+
+
+
+
 		close(fd);
 		this->clientsList.erase(client.getUserFd());
 	}
