@@ -6,7 +6,7 @@
 /*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 18:15:01 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/22 22:09:59 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/22 22:12:38 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,9 +108,9 @@ void Server::modeL(Channel &channel, Client &client, char mode, std::string arg)
 
 	userLimit = atoi(arg.c_str());
 
-	if(userLimit < 1 || userLimit > MAXCLIENTS)
+	if (userLimit < 1 || userLimit > MAXCLIENTS)
 	{
-		sendMessage(client.getUserFd(), "Need a number between 1 and " + MAXCLIENTS);
+		sendMessage(client.getUserFd(), "Number is out of range\r\n");
 		return ;
 	}
 
