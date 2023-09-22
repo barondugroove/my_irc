@@ -6,7 +6,7 @@
 /*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:18:27 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/21 17:01:43 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/22 22:03:34 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,10 +29,18 @@ void Server::cmdTopic(Client &client, std::stringstream &msg) {
 	//COUT
 	std::cout << it->second.getChannelName() << std::endl;
 
+	if (!it->second.getTopicMode())
+	{
+		//COUT
+		sendMessage(client.getUserFd(), "Channel is not in Topic mode.\r\n");
+		return ;
+	}
+
 	if (text.empty() && it->second.getTopicMode()) {
 		sendMessage(client.getUserFd(), "Topic for " + channel + " is :" + it->second.getTopic() + "\n");
 		return ;
 	}
+
 
 	if (it->second.getTopicMode() && !it->second.isUserOperator(client.getNickname())) {
 		sendMessage(client.getUserFd(), ERR_CHANOPRIVSNEEDED(client.getNickname(), channel));
