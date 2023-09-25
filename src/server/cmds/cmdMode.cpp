@@ -6,7 +6,7 @@
 /*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 18:15:01 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/25 19:29:34 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/25 22:55:01 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,5 +157,6 @@ void Server::cmdMode(Client &client, std::stringstream &msg) {
 		sendMessage(client.getUserFd(), ERR_CHANOPRIVSNEEDED(client.getNickname(), channelName));
 		return ;
 	}
+
 	((*this).*itMode->second)(it->second, client, mode[0], arg);
 }

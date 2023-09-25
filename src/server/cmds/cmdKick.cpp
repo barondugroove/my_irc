@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdKick.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:19:09 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/25 17:30:05 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/25 23:04:19 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ void Server::cmdKick(Client &client, std::stringstream &msg) {
 	std::string			user;
 	std::string			arg;
 
+	// Pas de zinz ici, la ça full getline
 	std::getline(msg, channel, ' ');
 	std::getline(msg, user, ' ');
 	std::getline(msg, arg);

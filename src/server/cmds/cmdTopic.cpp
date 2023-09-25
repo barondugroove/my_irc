@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdTopic.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:18:27 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/25 20:07:26 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/25 23:05:33 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,22 @@ void Server::cmdTopic(Client &client, std::stringstream &msg) {
 	std::string			channel;
 	std::string			text;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	// ATTENTION, ya pas tout msg en entier qui part dans channel? Genre "TOPIC #toto cul", channel = "#toto cul", text = "cul"
+	// It is chelou my big collaborator, non? Check les genre la fonction kick ya pas de trucs de zinz comme ça
 	msg >> channel;
 	std::getline(msg, text);
 
