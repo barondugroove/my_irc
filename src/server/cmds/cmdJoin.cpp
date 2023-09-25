@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:14:38 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/25 15:01:03 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/26 00:16:25 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,13 +29,13 @@ void Server::cmdJoin(Client &client, std::stringstream &msg) {
 		std::cout << "New channel " << channelName << " created." << std::endl;
 		Channel	newChannel(channelName, client);
 		channels.insert(std::pair<std::string, Channel>(channelName, newChannel));
-		sendMessage(client.getUserFd(), RPL_JOIN(client.getNickname(), channelName));
+		sendMessage(client.getUserFd(), RPL_JOIN(client.getNickname(), client.getUsername(), channelName));
 		return ;
 	}
 
 	if (it->second.isUserMember(client.getNickname())) {
 		std::cout << client.getNickname() << " can not join channel " << channelName << std::endl;
-		sendMessage(client.getUserFd(), ERR_CHANNELISFULL(client.getNickname(), channelName));
+		sendMessage(client.getUserFd(), ERR_USERONCHANNEL(client.getNickname(), "", channelName));
 		return ;
 	}
 
@@ -58,6 +58,7 @@ void Server::cmdJoin(Client &client, std::stringstream &msg) {
 	}
 	std::cout << client.getNickname() << " is joining channel " << channelName << std::endl;
 	it->second.addUser(client.getNickname(), client);
-	sendMessage(client.getUserFd(), RPL_JOIN(client.getNickname(), channelName));
-	it->second.sendMessageToAllMembers(RPL_JOIN(client.getNickname(), channelName), client.getNickname());
+	sendMessage(client.getUserFd(), RPL_JOIN(client.getNickname(), client.getUsername(), channelName));
+	sendMessage(client.getUserFd(), RPL_WELCOME(client.getNickname(), channelName));
+	it->second.sendMessageToAllMembers(RPL_JOIN(client.getNickname(), client.getUsername(), channelName), client.getNickname());
 }

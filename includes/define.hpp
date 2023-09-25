@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   define.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 17:10:03 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/26 00:02:35 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/26 00:42:25 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,8 @@
 #define USER_MESSAGES(client, target, msg) (":" + client + " PRIVMSG " + target + " :" +  msg + "\r\n")
 
 //SERVER REPLIES
-#define RPL_JOIN(client, channel) (":" + client + " JOIN " + channel + "\r\n")
+#define RPL_JOIN(nick, user, channel) (":" + nick + "!" + user + "@" + "" + " JOIN " + channel + "\n")
+#define RPL_WELCOME(client, channel) (":" + client + " 332 " + channel + " :Welcome in channel " + channel + "\r\n")
 #define RPL_PART(client, channel) (":" + client + " PART " + channel + "\r\n")
 #define RPL_MODE(client, channel, mode) (":" + client + " MODE " + channel + " " + mode + "\r\n")
 #define RPL_KICK(target, channel, client) ("["+ target + "] You were kicked from " + channel + " by " + client + "\r\n")

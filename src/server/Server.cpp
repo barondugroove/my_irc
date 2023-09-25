@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:06 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/25 20:20:52 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/25 23:49:40 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,7 +144,7 @@ void	Server::initEpoll(struct epoll_event &serverEvents) {
 
 	// ADDING SERVER FD TO EPOLL
 	serverEvents.data.fd = _serverSocket;
-	serverEvents.events = EPOLLIN;
+	serverEvents.events = EPOLLIN | EPOLLOUT;
 	if (epoll_ctl(_epoll_fd, EPOLL_CTL_ADD, _serverSocket, &serverEvents) == -1)
 		throw Server::EpollControlException();
 }

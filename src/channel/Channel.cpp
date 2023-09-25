@@ -88,12 +88,12 @@ bool	Channel::isUserOperator(std::string &nickname) {
 }
 
 void	Channel::eraseUser(std::string &nickname) {
-	_members.erase(_members.find(nickname));
 	if (isUserOperator(nickname))
 		eraseOperator(nickname);
 	if (isUserInvited(nickname))
 		eraseInvitee(nickname);
 	sendMessageToAllMembers(RPL_PART(nickname, _channelName), nickname);
+	_members.erase(_members.find(nickname));
 }
 
 void	Channel::addUser(std::string &nickname, Client &client) {
