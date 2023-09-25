@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   define.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 17:10:03 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/26 00:42:25 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/26 01:25:22 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,5 +53,6 @@
 #define RPL_NOTOPIC(client, channel) (client + " " + channel + " :No topic is set\r\n")
 #define RPL_INVITESNDR(client, invitee, channel) (":" + client + " " + invitee + " " + channel + "\r\n")
 #define RPL_INVITERCVR(client, invitee, channel) (":" + client + " INVITE " + invitee + " :" + channel + "\r\n")
+#define RPL_NICK(oldNick, newNick) (":" + oldNick + " NICK " + newNick + "\r\n")
 
 #endif

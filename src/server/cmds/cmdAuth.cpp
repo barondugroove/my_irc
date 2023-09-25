@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdAuth.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:19:31 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/26 00:32:58 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/26 01:32:53 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,11 +48,13 @@ void Server::cmdNick(Client &unauthClient, std::stringstream &msg) {
 	std::string	nickname;
 	std::getline(msg, nickname);
 
+	/*
 	if (unauthClient.getPassword().empty()) {
 		sendMessage(unauthClient.getUserFd(), unauthClient.getNickname() + " :You may not set NICK before using command PASS\n");
 		return ;
 	}
-	
+	*/
+
 	if (nickname.empty()) {
 		sendMessage(unauthClient.getUserFd(), unauthClient.getNickname() + " :No nickname given\n");
 		return ;
@@ -69,14 +71,28 @@ void Server::cmdNick(Client &unauthClient, std::stringstream &msg) {
 		return ;
 	}
 
+
+
+
+
+
+
+
+
+
 	if (!unauthClient.isAuth()) {
+		sendMessage(unauthClient.getUserFd(), RPL_NICK(unauthClient.getNickname(), nickname));
 		unauthClient.setNickname(nickname);
-		sendMessage(unauthClient.getUserFd(), "Requesting the new nick " + nickname + "\n");
 	}
 	else {
 		sendMessage(unauthClient.getUserFd(), unauthClient.getNickname() + " changed his nickname to " + nickname);
 		unauthClient.setNickname(nickname);
 	}
+	//BESOIN D'ENLEVER LE ELSE JE PENSE
+
+
+
+
 }
 
 void Server::cmdUser(Client &unauthClient, std::stringstream &msg) {

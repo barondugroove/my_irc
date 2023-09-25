@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:06 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/25 23:49:40 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/26 01:14:13 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,7 @@ void	Server::handleClientMsg(Client &client, std::string msg) {
 
 	std::cout << "Client " << client.getNickname() << " (" << client.getUsername() << ") fd[" << client.getUserFd() << "] : " << msg << std::endl;
 	if (it == commandsChannels.end()) {
-		sendMessage(client.getUserFd(), ERR_CMDNOTFOUND(client.getNickname()));
+		sendMessage(client.getUserFd(), ERR_CMDNOTFOUND(msg));
 	}
 	else if (!client.isAuth() && it->first != "PASS" && it->first != "USER"  && it->first != "NICK") {
 		sendMessage(client.getUserFd(), ERR_NOTREGISTERED(client.getNickname()));
