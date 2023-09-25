@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 17:10:03 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/25 16:38:24 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/25 17:11:22 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@
 #define RPL_JOIN(client, channel) (":" + client + " JOIN " + channel + "\r\n")
 #define RPL_PART(client, channel) (":" + client + " PART " + channel + "\r\n")
 #define RPL_MODE(client, channel, mode) (":" + client + " MODE " + channel + " " + mode + "\r\n")
+#define RPL_KICK(target, channel, client) ("["+ target + "] You were kicked from " + channel + " by " + client + "\r\n")
 #define RPL_TOPIC(client, channel, topic) (":" + client + " TOPIC " + channel + ": " + topic + "\r\n")
 #define RPL_NOTOPIC(client, channel) (client + " " + channel + " :No topic is set\r\n")
 #define RPL_INVITESNDR(client, invitee, channel) (":" + client + " " + invitee + " " + channel + "\r\n")

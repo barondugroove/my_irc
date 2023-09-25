@@ -49,7 +49,6 @@ Channel::~Channel(void) {
 	return;
 }
 
-
 void	Channel::sendMessageToAllMembers(std::string msg, std::string nickname) {
 	std::map<std::string, Client*>::iterator it = _members.begin();
 	for (; it != _members.end(); it++) {
@@ -92,6 +91,10 @@ bool	Channel::isUserOperator(std::string &nickname) {
 
 void	Channel::eraseUser(std::string &nickname) {
 	_members.erase(_members.find(nickname));
+	if (isUserOperator(nickname))
+		eraseOperator(nickname);
+	if (isUserInvited(nickname))
+		eraseInvitee(nickname);
 	sendMessageToAllMembers(RPL_PART(nickname, _channelName), nickname);
 }
 
@@ -116,6 +119,13 @@ void	Channel::eraseOperator(std::string &nickname) {
 	for (std::vector<std::string>::iterator it = _operator.begin(); it != _operator.end(); it++) {
 		if (*it == nickname)
 			_operator.erase(it);
+	}
+}
+
+void	Channel::eraseInvitee(std::string &nickname) {
+	for (std::vector<std::string>::iterator it = _invitees.begin(); it != _invitees.end(); it++) {
+		if (*it == nickname)
+			_invitees.erase(it);
 	}
 }
 

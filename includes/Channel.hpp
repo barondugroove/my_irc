@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/29 14:26:42 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/25 14:23:11 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/25 17:15:52 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ class Channel {
 		void		addInvitee(std::string &nickName);
 		void		eraseUser(std::string &nickName);
 		void		eraseOperator(std::string &nickName);
+		void		eraseInvitee(std::string &nickName);
 		void		sendMessageToAllMembers(std::string msg, std::string nickName);
 		void		sendMessageToMember(Client &client, std::string msg);
 

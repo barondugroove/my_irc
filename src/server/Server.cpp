@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:06 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/25 17:29:50 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/25 17:35:27 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,8 +131,8 @@ void	Server::listenClient(Client &client, int fd) {
 			if (it->second.isUserMember(client.getNickname()))
 				it->second.eraseUser(client.getNickname());
 		}
+		this->clientsList.erase(fd);
 		close(fd);
-		this->clientsList.erase(client.getUserFd());
 	}
 	else
 		handleClientMsg(client, parsed_msg);
@@ -235,7 +235,7 @@ Server::Server(unsigned short port, std::string password) : _port(port), _passwo
 	if (bind(_serverSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0)
 		throw Server::CantListenOnPortException();
 
-	if (setsockopt(_serverSocket, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &option, sizeof(option)) < 0)
+	if (setsockopt(_serverSocket, SOL_SOCKET, SO_REUSEPORT, &option, sizeof(option)) < 0)
 		throw Server::CantListenOnPortException();
 
 	if (listen(_serverSocket, serverAddr.sin_port) < 0)
