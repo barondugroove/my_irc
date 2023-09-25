@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:06 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/25 15:34:57 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/25 17:29:50 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,11 @@ void	Server::listenClient(Client &client, int fd) {
 	char msg[512];
 	memset(&msg, 0, sizeof(msg));
 	int bytes_received = recv(fd, msg, sizeof(msg), 0);
+	std::string parsed_msg;
+	parsed_msg.reserve(512);
+	for (int i = 0; msg[i]; i++)
+		if (msg[i] != 0x04)
+			parsed_msg.push_back(msg[i]);
 
 	// REMOVE CLIENT
 	if (bytes_received <= 0) // == 0 = DISCONECTED // < 0 ERROR
@@ -130,7 +135,7 @@ void	Server::listenClient(Client &client, int fd) {
 		this->clientsList.erase(client.getUserFd());
 	}
 	else
-		handleClientMsg(client, msg);
+		handleClientMsg(client, parsed_msg);
 }
 
 void	Server::initEpoll(struct epoll_event &serverEvents) {
