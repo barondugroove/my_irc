@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:06 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/25 18:40:47 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/25 19:06:52 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,8 +118,7 @@ void	Server::listenClient(Client &client, int fd) {
 			parsed_msg.push_back(msg[i]);
 
 	// REMOVE CLIENT
-	if (bytes_received <= 0) // == 0 = DISCONECTED // < 0 ERROR
-	{
+	if (bytes_received <= 0) {
 		std::cout << "Client disconnected" << std::endl;
 		if (epoll_ctl(_epoll_fd, EPOLL_CTL_DEL, fd, NULL) == -1)
 			throw Server::EpollControlException();
