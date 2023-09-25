@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 17:10:03 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/25 17:11:22 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/25 19:33:25 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 #define ERR_NOTREGISTERED(client) (client + " :You have not registered\r\n")
 #define ERR_CMDNOTFOUND(client) (client + " :Command not found\r\n")
 #define ERR_NOSUCHCHANNEL(client, channel) (client + " " + channel + " :No such channel\r\n")
+#define ERR_NOSUCHNICK(client, nickname) (client + " " + nickname + " :No such nickname\r\n")
 #define ERR_CHANOPRIVSNEEDED(client, channel) (client + " " + channel + " :You're not channel operator\r\n")
 #define ERR_NOTONCHANNEL(client, channel) (client + " " + channel + " :You're not on that channel\r\n")
 #define ERR_NEEDMOREPARAMS(client, cmd) (client + " " + cmd + " :Not enough parameters\r\n")

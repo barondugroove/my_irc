@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:15:57 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/25 15:44:14 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/25 19:33:18 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void Server::cmdInvite(Client &client, std::stringstream &msg) {
 	msg >> channel;
 	msg >> user;
 
-	if (channel.empty() || user.empty() || channel[0] != '#') {
+	if (channel.empty() || channel[0] != '#' || user.empty()) {
 		sendMessage(client.getUserFd(), ERR_NEEDMOREPARAMS(client.getNickname(), channel));
 		return ;
 	}
@@ -30,13 +30,19 @@ void Server::cmdInvite(Client &client, std::stringstream &msg) {
 		return ;
 	}
 	
-	std::map<int, Client>::iterator itClient = clientsList.find(client.getUserFd());
-	if (!itChannel->second.isUserMember(client.getNickname()) || itClient == clientsList.end()) {
-		sendMessage(client.getUserFd(), ERR_NOTONCHANNEL(client.getNickname(), channel));
+	if (!itChannel->second.isUserMember(user)) {
+		sendMessage(client.getUserFd(), ERR_USERONCHANNEL(client.getNickname(), user, channel));
 		return ;
 	}
+	
 	if (!itChannel->second.isUserOperator(client.getNickname())) {
-		sendMessage(client.getUserFd(), ERR_NOTONCHANNEL(client.getNickname(), channel));
+		sendMessage(client.getUserFd(), ERR_CHANOPRIVSNEEDED(client.getNickname(), channel));
+		return ;
+	}
+
+	std::map<int, Client>::iterator itClient = clientsList.find(getFdByNickname(user));
+	if (itClient == clientsList.end()) {
+		sendMessage(client.getUserFd(), ERR_NOSUCHNICK(client.getNickname(), channel));
 		return ;
 	}
 	std::cout << client.getNickname() << " has invited " << user << " to channel " << channel << std::endl;

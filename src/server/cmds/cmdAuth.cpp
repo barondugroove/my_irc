@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdAuth.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:19:31 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/25 19:32:34 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/25 19:35:07 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ bool	checkName(std::string &str) {
 
 void Server::cmdPass(Client &unauthClient, std::stringstream &msg) {
 	std::string	password;
-
 	std::getline(msg, password);
 
 	if (!Server::checkPassword(password)) {
@@ -47,10 +46,13 @@ void Server::cmdPass(Client &unauthClient, std::stringstream &msg) {
 
 void Server::cmdNick(Client &unauthClient, std::stringstream &msg) {
 	std::string	nickname;
-	
 	std::getline(msg, nickname);
 
-
+	if (unauthClient.getPassword().empty()) {
+		sendMessage(unauthClient.getUserFd(), unauthClient.getNickname() + " :You may not set NICK before using command PASS\n");
+		return ;
+	}
+	
 	if (nickname.empty()) {
 		sendMessage(unauthClient.getUserFd(), unauthClient.getNickname() + " :No nickname given\n");
 		return ;
@@ -61,10 +63,6 @@ void Server::cmdNick(Client &unauthClient, std::stringstream &msg) {
 		return ;
 	}
 
-	if (unauthClient.getPassword().empty()) {
-		sendMessage(unauthClient.getUserFd(), unauthClient.getNickname() + " :You may not set NICK before using command PASS\n");
-		return ;
-	}
 
 	if (!checkName(nickname)) {
 		sendMessage(unauthClient.getUserFd(), ERR_ERRONEUSNAME(unauthClient.getNickname(), nickname, "nickname\n"));
@@ -83,7 +81,6 @@ void Server::cmdNick(Client &unauthClient, std::stringstream &msg) {
 
 void Server::cmdUser(Client &unauthClient, std::stringstream &msg) {
 	std::string	username;
-	
 	std::getline(msg, username);
 
 	if (unauthClient.getPassword().empty()) {
