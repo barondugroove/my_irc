@@ -14,7 +14,6 @@
 #include <iostream>
 
 Client::Client(int clientFD) : _fd(clientFD) {
-	std::cout<< "Client Constructor called"<< std::endl;
 	this->_authentified = false;
 	this->_nickname = "";
 	this->_username = "";
@@ -27,8 +26,6 @@ Client::Client(const Client &src) : _fd(src.getUserFd()) {
 
 Client & Client::operator=(const Client &rhs) {
 	if (this != &rhs) {
-		
-		std::cout<< "Client Copy Constructor called"<< std::endl;
 		this->_authentified = rhs._authentified;
 		this->_nickname = rhs._nickname;
 		this->_username = rhs._username;
@@ -37,7 +34,6 @@ Client & Client::operator=(const Client &rhs) {
 }
 
 Client::~Client(void) {
-	std::cout<< "Client Destructor called"<< std::endl;
 	return;
 }
 

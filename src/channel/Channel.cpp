@@ -14,7 +14,6 @@
 #include <iostream>
 
 Channel::Channel(std::string name, Client &channelCreator) : _channelName(name) {
-	std::cout<< "Channel Constructor called"<< std::endl;
 	_userLimit = 1000;
 	_inviteMode = false;
 	_topicMode = false;
@@ -45,7 +44,6 @@ Channel & Channel::operator=(const Channel &rhs) {
 }
 
 Channel::~Channel(void) {
-	std::cout<< "Channel Destructor called"<< std::endl;
 	return;
 }
 

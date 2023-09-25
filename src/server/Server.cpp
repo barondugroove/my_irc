@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:06 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/25 19:06:52 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/25 19:09:56 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,6 @@ void	Server::listenClient(Client &client, int fd) {
 			throw Server::EpollControlException();
 
 		std::map<std::string, Channel>::iterator it = channels.begin();
-		// Does it marche, my big pote?
 		for (; it != channels.end(); it++)
 		{
 			if (it->second.isUserMember(client.getNickname()))
