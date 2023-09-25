@@ -6,7 +6,7 @@
 /*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:17:37 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/25 23:04:29 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/26 00:36:19 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,14 +22,14 @@ int	Server::getFdByNickname(std::string &nickname) {
 }
 
 void Server::cmdPrivMsg(Client &client, std::stringstream &msg) {
-	std::string			args;
+	std::string			name;
 	std::string			text;
 
-	msg >> args;
-	msg.ignore(512, ' ');
+	
+	std::getline(msg, name, ' ');
 	std::getline(msg, text);
 
-	if (args.empty()) {
+	if (name.empty()) {
 		sendMessage(client.getUserFd(), ERR_NORECIPIENT(client.getNickname()));
 		return ;
 	}
@@ -39,24 +39,24 @@ void Server::cmdPrivMsg(Client &client, std::stringstream &msg) {
 		return ;	
 	}
 
-	if (args[0] == '#') {
-		std::map<std::string, Channel>::iterator it = channels.find(args);
+	if (name[0] == '#') {
+		std::map<std::string, Channel>::iterator it = channels.find(name);
 		if (it == channels.end()) {
-			sendMessage(client.getUserFd(), ERR_CANNOTSENDTOCHAN(client.getNickname(), args));
+			sendMessage(client.getUserFd(), ERR_CANNOTSENDTOCHAN(client.getNickname(), name));
 			return ;
 		}
 		if (!it->second.isUserMember(client.getNickname())) {
-			sendMessage(client.getUserFd(), ERR_NOTONCHANNEL(client.getNickname(), args));
+			sendMessage(client.getUserFd(), ERR_NOTONCHANNEL(client.getNickname(), name));
 			return ;	
 		}
-		it->second.sendMessageToAllMembers(CHANNEL_MESSAGES(client.getNickname(), args, text), client.getNickname());
+		it->second.sendMessageToAllMembers(CHANNEL_MESSAGES(client.getUsername() +'!'+ client.getNickname(), name, text), client.getNickname());
 	}
 	else {
-		int fd = getFdByNickname(args);
+		int fd = getFdByNickname(name);
 		std::map<int, Client>::iterator it = clientsList.find(fd);
 		if (it != clientsList.end())
-			sendMessage(it->second.getUserFd(), USER_MESSAGES(client.getNickname(), args, text));
+			sendMessage(it->second.getUserFd(), USER_MESSAGES(client.getUsername() +'!'+ client.getNickname(), name, text));
 		else
-			sendMessage(client.getUserFd(), ERR_ERRONEUSNAME(client.getNickname(), args, "nickname"));
+			sendMessage(client.getUserFd(), ERR_ERRONEUSNAME(client.getNickname(), name, "nickname"));
 	}
 }
