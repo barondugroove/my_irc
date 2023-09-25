@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:14:38 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/20 16:58:57 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/22 19:27:55 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,13 +33,31 @@ void Server::cmdJoin(Client &client, std::stringstream &msg) {
 		return ;
 	}
 
+	if (it->second.isUserMember(client.getNickname())) {
+		std::cout << client.getNickname() << " can not join channel " << channelName << std::endl;
+		sendMessage(client.getUserFd(), ERR_CHANNELISFULL(client.getNickname(), channelName));
+		return ;
+	}
+
+	if (it->second.getPassMode() && (it->second.getPassword() != key)) {
+		std::cout << client.getNickname() << " can not join channel " << channelName << std::endl;
+		sendMessage(client.getUserFd(), ERR_BADCHANNELKEY(client.getNickname(), channelName));
+		return ;
+	}
+	
+	if (it->second.getInviteMode() && !it->second.isUserInvited(client.getNickname())) {
+		std::cout << client.getNickname() << " can not join channel " << channelName << std::endl;
+		sendMessage(client.getUserFd(), ERR_INVITEONLYCHAN(client.getNickname(), channelName));
+		return ;
+	}
+	
 	if (it->second.isChannelFull()) {
 		std::cout << client.getNickname() << " can not join channel " << channelName << std::endl;
 		sendMessage(client.getUserFd(), ERR_CHANNELISFULL(client.getNickname(), channelName));
+		return ;
 	}
-	else {
-		std::cout << client.getNickname() << " is joining channel " << channelName << std::endl;
-		it->second.addUser(client.getNickname(), client);
-		sendMessage(client.getUserFd(), RPL_JOIN(client.getNickname(), channelName));
-	}
+	std::cout << client.getNickname() << " is joining channel " << channelName << std::endl;
+	it->second.addUser(client.getNickname(), client);
+	sendMessage(client.getUserFd(), RPL_JOIN(client.getNickname(), channelName));
+	it->second.sendMessageToAllMembers(RPL_JOIN(client.getNickname(), channelName));
 }

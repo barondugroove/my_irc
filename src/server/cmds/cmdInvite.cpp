@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdInvite.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:15:57 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/21 15:21:22 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/22 18:57:44 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,11 @@ void Server::cmdInvite(Client &client, std::stringstream &msg) {
 	//COUT
 	std::cout << "ismember is : " << itChannel->second.isUserMember(client.getNickname()) << std::endl;
 	std::cout << "it is : " << itClient->second.getNickname() << std::endl;
-	if (itChannel->second.isUserMember(client.getNickname()) || itClient == clientsList.end()) {
+	if (!itChannel->second.isUserMember(client.getNickname()) || itClient == clientsList.end()) {
 		sendMessage(client.getUserFd(), ERR_NOTONCHANNEL(client.getNickname(), channel));
 		return ;
 	}
-	if (itChannel->second.isUserOperator(client.getNickname())) {
+	if (!itChannel->second.isUserOperator(client.getNickname())) {
 		sendMessage(client.getUserFd(), ERR_NOTONCHANNEL(client.getNickname(), channel));
 		return ;
 	}

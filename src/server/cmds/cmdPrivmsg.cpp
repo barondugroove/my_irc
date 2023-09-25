@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:17:37 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/19 16:45:57 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/22 20:22:26 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,22 +29,35 @@ void Server::cmdPrivMsg(Client &client, std::stringstream &msg) {
 	msg.ignore(512, ' ');
 	std::getline(msg, text);
 
-	if (!args.empty() && args[0] == '#') {
-		std::map<std::string, Channel>::iterator it = channels.find(args);
-		if (it != channels.end()) {
-			if (*text.begin() == ':')
-				it->second.sendMessageToAllMembers(CHANNEL_MESSAGES(client.getNickname(), args, text), client.getNickname());
-			else
-				it->second.sendMessageToAllMembers(CHANNEL_MESSAGES(client.getNickname(), args, text), "");
-		}
-		else
-			sendMessage(client.getUserFd(), "Cannot send message to channel " + args + '\n');
+	if (args.empty()) {
+		sendMessage(client.getUserFd(), ERR_NORECIPIENT(client.getNickname()));
+		return ;
 	}
-	else if (int fd = getFdByNickname(args) != -1) {
+
+	if (text.empty()) {
+		sendMessage(client.getUserFd(), ERR_NOTEXTTOSEND(client.getNickname()));
+		return ;	
+	}
+
+	if (args[0] == '#') {
+		std::map<std::string, Channel>::iterator it = channels.find(args);
+		if (it == channels.end()) {
+			sendMessage(client.getUserFd(), ERR_CANNOTSENDTOCHAN(client.getNickname(), args));
+			return ;
+		}
+		if (!it->second.isUserMember(client.getNickname())) {
+			sendMessage(client.getUserFd(), ERR_NOTONCHANNEL(client.getNickname(), args));
+			return ;	
+		}
+		// corriger le bug du double message quand on ecrit dans le chan via hexchat (technique du :)
+		it->second.sendMessageToAllMembers(CHANNEL_MESSAGES(client.getNickname(), args, text));
+	}
+	else {
+		int fd = getFdByNickname(args);
 		std::map<int, Client>::iterator it = clientsList.find(fd);
 		if (it != clientsList.end())
 			sendMessage(it->second.getUserFd(), USER_MESSAGES(client.getNickname(), text));
 		else
-			sendMessage(client.getUserFd(), "Cannot send message to user " + args + '\n');
+			sendMessage(client.getUserFd(), ERR_ERRONEUSNAME(client.getNickname(), args, "nickname"));
 	}
 }

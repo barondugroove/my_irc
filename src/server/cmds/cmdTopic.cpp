@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdTopic.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:18:27 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/22 22:08:33 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/25 14:40:43 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,44 +25,31 @@ void Server::cmdTopic(Client &client, std::stringstream &msg) {
 		return ;
 	}
 
-
-	//COUT
-	std::cout << it->second.getChannelName() << std::endl;
-
-	if (!it->second.getTopicMode())
-	{
-		//COUT
-		sendMessage(client.getUserFd(), "Channel is not in Topic mode.\r\n");
-		return ;
-	}
-
-	if (text.empty() && it->second.getTopicMode()) {
-		sendMessage(client.getUserFd(), "Topic for " + channel + " is :" + it->second.getTopic() + "\n");
-		return ;
-	}
-
-
 	if (it->second.getTopicMode() && !it->second.isUserOperator(client.getNickname())) {
 		sendMessage(client.getUserFd(), ERR_CHANOPRIVSNEEDED(client.getNickname(), channel));
 		return ;
 	}
-
+	
 	if (!it->second.getTopicMode() && !it->second.isUserMember(client.getNickname())) {
 		sendMessage(client.getUserFd(), ERR_NOTONCHANNEL(client.getNickname(), channel));
 		return ;
 	}
 
-	if (text == ":") {
+	if (text.empty()) {
+		if (!it->second.getTopic().empty())
+			sendMessage(client.getUserFd(), RPL_TOPIC(client.getNickname(), channel, it->second.getTopic()));
+		else
+			sendMessage(client.getUserFd(), RPL_NOTOPIC(client.getNickname(), channel));
+	}
+	else if (text == ":") {
 		it->second.setTopic("");
-		std::string msg = "Topic for " + channel + " has been cleared\n";
-		it->second.sendMessageToAllMembers(msg, client.getNickname());
+		std::string msg = client.getNickname() + " " + channel + " :No topic is set\r\n";
+		it->second.sendMessageToAllMembers(msg);
 	}
 	else {
 		it->second.setTopic(text);
-
-		//COUT    sendMessageToAllMembers not working
-		std::string msg = "Topic for " + channel + " has been changed to " + it->second.getTopic() + "\n";
-		it->second.sendMessageToAllMembers(msg, client.getNickname());
+		std::string msg = client.getNickname() + " " + channel + " :" + text + "\r\n";
+		it->second.sendMessageToAllMembers(msg);
 	}
 }
 

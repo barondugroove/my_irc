@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/29 14:26:42 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/20 17:21:37 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/25 14:23:11 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ class Channel {
 
 		std::string getChannelName() const	{return _channelName;};
 		std::string	&getTopic()				{return _topic;};
+		std::string	&getPassword()			{return _password;};
 		bool		getInviteMode()			{return _inviteMode;};
 		bool		getTopicMode()			{return _topicMode;};
 		bool		getPassMode()			{return _passwordMode;};
@@ -43,8 +44,8 @@ class Channel {
 
 		bool		isChannelFull();
 		bool		isUserMember(std::string &nickName);
+		bool		isUserInvited(std::string &nickName);
 		bool		isUserOperator(std::string &nickName);
-		bool		isInviteLocked(std::string &nickName);
 
 		void		addUser(std::string &nickName, Client &client);
 		void		addOperator(std::string &nickName);
@@ -53,8 +54,6 @@ class Channel {
 		void		eraseOperator(std::string &nickName);
 		void		sendMessageToAllMembers(std::string msg, std::string nickName);
 		void		sendMessageToMember(Client &client, std::string msg);
-
-
 
 	private :
 		std::string						_channelName;

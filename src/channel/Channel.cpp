@@ -77,6 +77,15 @@ bool	Channel::isUserMember(std::string &nickname) {
 	return true;
 }
 
+bool	Channel::isUserInvited(std::string &nickname) {
+	std::vector<std::string>::iterator it = _invitees.begin();
+	for (; it != _invitees.end(); it++) {
+		if (*it == nickname)
+			return true;
+	}
+	return false;
+}
+
 bool	Channel::isUserOperator(std::string &nickname) {
 	std::vector<std::string>::iterator it = std::find(_operator.begin(), _operator.end(), nickname);
 	if (it == _operator.end())
