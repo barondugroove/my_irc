@@ -64,9 +64,6 @@ void	Channel::sendMessageToMember(Client &client, std::string msg) {
 }
 
 bool	Channel::isChannelFull() {
-	//COUT
-	std::cout << "user limit is : " << _userLimit << " _members size is : " << _members.size() << std::endl;
-	std::cout << "result is : " << ((_userLimit - _members.size()) >= 1) << std::endl;
 	return ((_userLimit - _members.size()) < 1);
 }
 

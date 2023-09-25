@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:17:57 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/12 18:09:38 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/25 15:19:00 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 void Server::cmdPart(Client &client, std::stringstream &msg) {
 	std::string			channel;
 
-	msg.ignore(512, ' ');
 	std::getline(msg, channel, ' ');
 
 	std::map<std::string, Channel>::iterator it = channels.find(channel);

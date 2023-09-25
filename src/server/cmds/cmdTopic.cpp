@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:18:27 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/25 14:40:43 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/25 15:08:14 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,12 +44,12 @@ void Server::cmdTopic(Client &client, std::stringstream &msg) {
 	else if (text == ":") {
 		it->second.setTopic("");
 		std::string msg = client.getNickname() + " " + channel + " :No topic is set\r\n";
-		it->second.sendMessageToAllMembers(msg);
+		it->second.sendMessageToAllMembers(msg, client.getNickname());
 	}
 	else {
 		it->second.setTopic(text);
 		std::string msg = client.getNickname() + " " + channel + " :" + text + "\r\n";
-		it->second.sendMessageToAllMembers(msg);
+		it->second.sendMessageToAllMembers(msg, client.getNickname());
 	}
 }
 

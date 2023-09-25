@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:14:38 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/22 19:27:55 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/25 15:01:03 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,5 +59,5 @@ void Server::cmdJoin(Client &client, std::stringstream &msg) {
 	std::cout << client.getNickname() << " is joining channel " << channelName << std::endl;
 	it->second.addUser(client.getNickname(), client);
 	sendMessage(client.getUserFd(), RPL_JOIN(client.getNickname(), channelName));
-	it->second.sendMessageToAllMembers(RPL_JOIN(client.getNickname(), channelName));
+	it->second.sendMessageToAllMembers(RPL_JOIN(client.getNickname(), channelName), client.getNickname());
 }

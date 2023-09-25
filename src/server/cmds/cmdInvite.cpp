@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:15:57 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/22 18:57:44 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/25 15:44:14 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,9 +31,6 @@ void Server::cmdInvite(Client &client, std::stringstream &msg) {
 	}
 	
 	std::map<int, Client>::iterator itClient = clientsList.find(client.getUserFd());
-	//COUT
-	std::cout << "ismember is : " << itChannel->second.isUserMember(client.getNickname()) << std::endl;
-	std::cout << "it is : " << itClient->second.getNickname() << std::endl;
 	if (!itChannel->second.isUserMember(client.getNickname()) || itClient == clientsList.end()) {
 		sendMessage(client.getUserFd(), ERR_NOTONCHANNEL(client.getNickname(), channel));
 		return ;

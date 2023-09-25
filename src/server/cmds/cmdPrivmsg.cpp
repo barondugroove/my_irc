@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:17:37 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/22 20:22:26 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/25 15:01:21 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ void Server::cmdPrivMsg(Client &client, std::stringstream &msg) {
 			return ;	
 		}
 		// corriger le bug du double message quand on ecrit dans le chan via hexchat (technique du :)
-		it->second.sendMessageToAllMembers(CHANNEL_MESSAGES(client.getNickname(), args, text));
+		it->second.sendMessageToAllMembers(CHANNEL_MESSAGES(client.getNickname(), args, text), client.getNickname());
 	}
 	else {
 		int fd = getFdByNickname(args);

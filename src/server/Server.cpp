@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:06 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/22 22:20:26 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/25 15:34:57 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,20 +119,13 @@ void	Server::listenClient(Client &client, int fd) {
 		if (epoll_ctl(_epoll_fd, EPOLL_CTL_DEL, fd, NULL) == -1)
 			throw Server::EpollControlException();
 
-
-
-
+		std::map<std::string, Channel>::iterator it = channels.begin();
 		// Does it marche, my big pote?
-		for (size_t i = 0; i < channels.size(); i++)
+		for (; it != channels.end(); it++)
 		{
-			if (channels[i].isUserMember(client))
-				channels[i].eraseUser(client);
+			if (it->second.isUserMember(client.getNickname()))
+				it->second.eraseUser(client.getNickname());
 		}
-	
-
-
-
-
 		close(fd);
 		this->clientsList.erase(client.getUserFd());
 	}
