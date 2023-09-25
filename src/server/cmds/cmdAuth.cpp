@@ -6,7 +6,7 @@
 /*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:19:31 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/25 18:55:17 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/25 19:32:34 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,13 +26,18 @@ bool	checkName(std::string &str) {
 
 void Server::cmdPass(Client &unauthClient, std::stringstream &msg) {
 	std::string	password;
-	msg >> password;
 
-	if (unauthClient.isAuth()) {
+	std::getline(msg, password);
+
+	if (!Server::checkPassword(password)) {
+		sendMessage(unauthClient.getUserFd(), ERR_PASSWDMISMATCH(unauthClient.getNickname()));
+		return ;
+	}
+	else if (unauthClient.isAuth()) {
 		sendMessage(unauthClient.getUserFd(), ERR_ALREADYREGISTERED(unauthClient.getNickname()));
 		return ;
 	}
-	if (password.empty()) {
+	else if (password.empty()) {
 		sendMessage(unauthClient.getUserFd(), ERR_NEEDMOREPARAMS(unauthClient.getNickname(), "PASS"));
 		return ;
 	}

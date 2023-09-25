@@ -6,7 +6,7 @@
 /*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:15 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/21 16:38:13 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/25 19:28:07 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,8 @@ class Server {
 		void			modeK(Channel &channel, Client &client, char mode, std::string arg);
 		void			modeO(Channel &channel, Client &client, char mode, std::string arg);
 		void			modeL(Channel &channel, Client &client, char mode, std::string arg);
+
+		static bool		checkPassword(std::string password);
 
 	private :
 		unsigned short		_port;

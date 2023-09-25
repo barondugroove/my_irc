@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdMode.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 18:15:01 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/25 18:39:59 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/25 19:29:34 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,14 +51,6 @@ void Server::modeT(Channel &channel, Client &client, char mode, std::string arg)
 	return ;
 }
 
-bool	checkPassworde(std::string password) {
-	if (password.find(' ') != std::string::npos)
-		return false;
-	if (password.size() < 8)
-		return false;
-	return true;
-}
-
 void Server::modeK(Channel &channel, Client &client, char mode, std::string arg) {
 
 	if (mode == '+') {
@@ -66,7 +58,7 @@ void Server::modeK(Channel &channel, Client &client, char mode, std::string arg)
 			sendMessage(client.getUserFd(), "No password\r\n");
 			return ;
 		}
-		if (checkPassworde(arg)) {
+		if (Server::checkPassword(arg)) {
 			channel.setPassMode(true);
 			channel.setChannelPass(arg);
 		} else {

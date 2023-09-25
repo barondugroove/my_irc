@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/21 16:41:57 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/19 18:50:10 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/25 19:27:38 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,17 +25,11 @@ void	checkPort(char *portStr) {
 		throw Server::PortNotNumberException();
 }
 
-bool	checkPassword(std::string password) {
-	if (password.find(' ') != std::string::npos)
-		return false;
-	if (password.size() < 8)
-		return false;
-	return true;
-}
+
 
 bool	checkInputs(char *port, char *password) {
 	checkPort(port);
-	if (!checkPassword(password)) {
+	if (!Server::checkPassword(password)) {
 		std::cerr << "Error. Password format incorrect." << std::endl;	
 		return false;
 	}

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:06 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/25 19:09:56 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/25 19:25:21 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -259,6 +259,14 @@ Server::Server(unsigned short port, std::string password) : _port(port), _passwo
 
 	std::cout << std::endl << "All good!" << std::endl << "port    : " << _port << std::endl << "password: " << _password << std::endl;
 	run(_serverSocket);
+}
+
+bool	Server::checkPassword(std::string password) {
+	if (password.find(' ') != std::string::npos)
+		return false;
+	if (password.size() < 8)
+		return false;
+	return true;
 }
 
 Server::~Server(void) {
