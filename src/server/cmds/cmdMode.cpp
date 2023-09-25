@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 18:15:01 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/25 15:44:44 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/25 18:39:59 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,11 +51,6 @@ void Server::modeT(Channel &channel, Client &client, char mode, std::string arg)
 	return ;
 }
 
-
-
-
-	// NEED TO USE THE CHECKPASSWORD FROM THE MAIN
-
 bool	checkPassworde(std::string password) {
 	if (password.find(' ') != std::string::npos)
 		return false;
@@ -63,7 +58,6 @@ bool	checkPassworde(std::string password) {
 		return false;
 	return true;
 }
-
 
 void Server::modeK(Channel &channel, Client &client, char mode, std::string arg) {
 
@@ -87,21 +81,19 @@ void Server::modeK(Channel &channel, Client &client, char mode, std::string arg)
 	return ;
 }
 
-
 void Server::modeO(Channel &channel, Client &client, char mode, std::string arg) {
 
 	if (mode == '+')
 		channel.addOperator(arg);
 	else
 		channel.eraseOperator(arg);
+	if (channel.getOperatorCount() == 0) {
+		std::map<std::string, Channel>::iterator it = channels.find(channel.getChannelName());
+		eraseChannel(it);
+	}
 	sendMessage(client.getUserFd(), RPL_MODE(client.getNickname(), channel.getChannelName(), mode + 'o'));
 	return ;
 }
-
-
-
-
-	// C PAS FINI CA??????????????????
 
 void Server::modeL(Channel &channel, Client &client, char mode, std::string arg) {
 	int	userLimit;
@@ -129,9 +121,6 @@ void Server::cmdMode(Client &client, std::stringstream &msg) {
 	std::getline(msg, channelName, ' ');
 	std::getline(msg, mode, ' ');
 	std::getline(msg, arg);
-
-	//COUT
-	std::cout << "channel name is : " << channelName << " , mode is : " << mode << " and argument is : " << arg << std::endl;
 
 	//NO CHANNEL
 	if (channelName.empty() || channelName[0] != '#') {

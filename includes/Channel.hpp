@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/29 14:26:42 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/25 17:15:52 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/25 18:37:26 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ class Channel {
 		bool		getTopicMode()			{return _topicMode;};
 		bool		getPassMode()			{return _passwordMode;};
 		int			getUserCount()			{return _members.size();};
+		int			getOperatorCount()		{return _operator.size();};
 
 		void		setTopic(std::string topic);
 		void		setChannelPass(std::string password);
