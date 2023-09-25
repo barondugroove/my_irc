@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:17:37 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/25 17:29:59 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/25 20:24:59 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,14 +49,13 @@ void Server::cmdPrivMsg(Client &client, std::stringstream &msg) {
 			sendMessage(client.getUserFd(), ERR_NOTONCHANNEL(client.getNickname(), args));
 			return ;	
 		}
-		// corriger le bug du double message quand on ecrit dans le chan via hexchat (technique du :)
 		it->second.sendMessageToAllMembers(CHANNEL_MESSAGES(client.getNickname(), args, text), client.getNickname());
 	}
 	else {
 		int fd = getFdByNickname(args);
 		std::map<int, Client>::iterator it = clientsList.find(fd);
 		if (it != clientsList.end())
-			sendMessage(it->second.getUserFd(), USER_MESSAGES(client.getNickname(), text));
+			sendMessage(it->second.getUserFd(), USER_MESSAGES(client.getNickname(), args, text));
 		else
 			sendMessage(client.getUserFd(), ERR_ERRONEUSNAME(client.getNickname(), args, "nickname"));
 	}

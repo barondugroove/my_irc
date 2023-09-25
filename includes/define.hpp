@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 17:10:03 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/25 19:33:25 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/25 20:23:59 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@
 
 //PRIVMSG BUILDERS
 #define CHANNEL_MESSAGES(client, channel, msg) (":" + client + " PRIVMSG " + channel + " :" + msg + "\r\n")
-#define USER_MESSAGES(client, msg) ("Message from " + client + " : \n" + msg + '\n')
+#define USER_MESSAGES(client, target, msg) (":" + client + " PRIVMSG " + target + " :" +  msg + "\r\n")
 
 //SERVER REPLIES
 #define RPL_JOIN(client, channel) (":" + client + " JOIN " + channel + "\r\n")

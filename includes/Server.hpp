@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:15 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/25 19:28:07 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/25 19:52:06 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ class Server {
 		int					_serverSocket;
 		int					_epoll_fd;
 
-		std::map<int, Client>	clientsList;
+		std::map<int, Client>			clientsList;
 		std::map<std::string, Channel>	channels;
 
 		std::map<std::string, void(Server::*)(Client& ,std::stringstream &msg)>								commandsChannels;
