@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdAuth.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:19:31 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/26 10:44:19 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/26 10:59:13 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ bool	checkName(std::string &str) {
 
 	if (str.empty() || str[0] == '$' || str[0] == ':' || str[0] == '#' || str[0] == '&')
 		return false;
-	for (size_t i = 0; i < str.size() - 1; i++) {
+	for (size_t i = 0; i < str.size(); i++) {
 		if (forbiddenChars.find(str[i]) != std::string::npos)
 			return false;
 	}
@@ -48,23 +48,15 @@ void Server::cmdNick(Client &unauthClient, std::stringstream &msg) {
 	std::string	nickname;
 	std::getline(msg, nickname);
 
-	/*
-	if (unauthClient.getPassword().empty()) {
-		sendMessage(unauthClient.getUserFd(), unauthClient.getNickname() + " :You may not set NICK before using command PASS\n");
-		return ;
-	}
-	*/
-
 	if (nickname.empty()) {
 		sendMessage(unauthClient.getUserFd(), unauthClient.getNickname() + " :No nickname given\n");
 		return ;
 	}
 
-	if (getFdByNickname(nickname) != -1) {
+	if (getFdByNickname(nickname) != -1 && getFdByNickname(nickname) != unauthClient.getUserFd()) {
 		sendMessage(unauthClient.getUserFd(), ERR_NICKNAMEINUSE(unauthClient.getNickname(), nickname));
 		return ;
 	}
-
 
 	if (!checkName(nickname)) {
 		sendMessage(unauthClient.getUserFd(), ERR_ERRONEUSNICKNAME(unauthClient.getNickname(), nickname));
@@ -75,12 +67,6 @@ void Server::cmdNick(Client &unauthClient, std::stringstream &msg) {
 		sendMessage(unauthClient.getUserFd(), RPL_NICK(unauthClient.getNickname(), nickname));
 		unauthClient.setNickname(nickname);
 	}
-	/*
-	else {
-		sendMessage(unauthClient.getUserFd(), unauthClient.getNickname() + " changed his nickname to " + nickname);
-		unauthClient.setNickname(nickname);
-	}
-	*/
 }
 
 void Server::cmdUser(Client &unauthClient, std::stringstream &msg) {
@@ -111,7 +97,7 @@ void Server::cmdUser(Client &unauthClient, std::stringstream &msg) {
 		sendMessage(unauthClient.getUserFd(), "Requesting the new username " + username + "\n");
 		if (unauthClient.getPassword() == _password && !unauthClient.getNickname().empty()) {
 			unauthClient.setAuth(true);
-			
+
 			sendMessage(unauthClient.getUserFd(), RPL_WELCOME(unauthClient.getNickname()));
 		}
 		else {
