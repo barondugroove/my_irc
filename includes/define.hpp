@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 17:10:03 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/26 10:49:49 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/26 12:05:24 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 #define ERR_NOSUCHCHANNEL(client, channel) (": 403 " + client + " " + channel + " :No such channel\r\n")
 #define ERR_NOSUCHNICK(client, nickname) (": 401 " + client + " " + nickname + " :No such nickname\r\n")
 #define ERR_CHANOPRIVSNEEDED(client, channel) (": 482 " + client + " " + channel + " :You're not channel operator\r\n")
-#define ERR_NOTONCHANNEL(client, channel) (": 442 " + client + " " + channel + " :You're not on that channel\r\n")
+#define ERR_NOTONCHANNEL(client, channel) (": 442 " + client + " " + channel + " :Not on that channel\r\n")
 #define ERR_NEEDMOREPARAMS(client, cmd) (": 461 " + client + " " + cmd + " :Not enough parameters\r\n")
 #define ERR_TOOMUCHPARAMS(client, cmd) (client + " " + cmd + " :Too much parameters\r\n")
 #define ERR_ALREADYREGISTERED(client) (": 462 " + client + " :You may not reregister\r\n")

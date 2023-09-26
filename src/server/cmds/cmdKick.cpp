@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:19:09 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/26 10:18:55 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/26 11:53:12 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@ void Server::cmdKick(Client &client, std::stringstream &msg) {
 	std::string			reason;
 
 	std::getline(msg, channel, ' ');
-	msg.ignore(512, ' ');
 	std::getline(msg, user, ' ');
 	std::getline(msg, reason);
 
@@ -33,6 +32,12 @@ void Server::cmdKick(Client &client, std::stringstream &msg) {
 	std::map<std::string, Channel>::iterator it = channels.find(channel);
 	if (it == channels.end()) {
 		sendMessage(client.getUserFd(), ERR_NOSUCHCHANNEL(client.getNickname(), channel));
+		return ;
+	}
+
+	//USER NOT ON THE CHANNEL
+	if (!it->second.isUserMember(user)) {
+		sendMessage(client.getUserFd(), ERR_NOTONCHANNEL(client.getNickname(), channel));
 		return ;
 	}
 

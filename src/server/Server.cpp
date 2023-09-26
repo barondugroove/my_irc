@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:06 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/26 10:34:35 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/26 11:34:43 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -245,13 +245,17 @@ Server::Server(unsigned short port, std::string password) : _port(port), _passwo
 	serverAddr.sin_addr.s_addr = INADDR_ANY;
 	serverAddr.sin_port = htons(_port);
 
-	// BINDING SOCKET ADDR
-	if (bind(_serverSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0) {
+	if (setsockopt(_serverSocket, SOL_SOCKET, SO_REUSEPORT, &option, sizeof(option)) < 0) {
+		close(_serverSocket);
+		throw Server::CantListenOnPortException();
+	}
+	if (setsockopt(_serverSocket, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option)) < 0) {
 		close(_serverSocket);
 		throw Server::CantListenOnPortException();
 	}
 
-	if (setsockopt(_serverSocket, SOL_SOCKET, SO_REUSEPORT, &option, sizeof(option)) < 0) {
+	// BINDING SOCKET ADDR
+	if (bind(_serverSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0) {
 		close(_serverSocket);
 		throw Server::CantListenOnPortException();
 	}
