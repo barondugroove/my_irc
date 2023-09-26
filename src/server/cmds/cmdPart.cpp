@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:17:57 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/26 09:23:34 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/26 09:57:39 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,17 @@
 
 void Server::cmdPart(Client &client, std::stringstream &msg) {
 	std::string			channel;
-
-	std::getline(msg, channel);
+	std::string			test;
+	std::getline(msg, channel, ' ');
+	std::getline(msg, test);
 
 	// NO CHANNEL IN PARAMETER
-	if (channel.empty()) {
+	if (channel.empty() || channel[0] != '#' || test != ":Leaving") {
 		sendMessage(client.getUserFd(), ERR_NORECIPIENT(client.getNickname()));
 		return ;
 	}
 
 	std::map<std::string, Channel>::iterator it = channels.find(channel);
-
 	// CHANNEL DOES NOT EXIST
 	if (it == channels.end()) {
 		sendMessage(client.getUserFd(), ERR_NOSUCHCHANNEL(client.getNickname(), channel));

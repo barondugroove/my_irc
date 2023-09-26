@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:06 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/26 09:20:09 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/26 09:47:00 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,6 +128,8 @@ void	Server::listenClient(Client &client, int fd) {
 		{
 			if (it->second.isUserMember(client.getNickname()))
 				it->second.eraseUser(client.getNickname());
+			if (it->second.getUserCount() == 0)
+				eraseChannel(it);
 		}
 		this->clientsList.erase(fd);
 		close(fd);
@@ -156,6 +158,8 @@ void	Server::cmdQuit(Client & client, std::stringstream &msg) {
 	{
 		if (it->second.isUserMember(client.getNickname()))
 			it->second.eraseUser(client.getNickname());
+		if (it->second.getUserCount() == 0)
+			eraseChannel(it);
 	}
 	close(client.getUserFd());
 	this->clientsList.erase(client.getUserFd());
