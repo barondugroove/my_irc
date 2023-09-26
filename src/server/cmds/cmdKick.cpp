@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdKick.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:19:09 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/25 23:04:19 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/26 04:41:19 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,11 @@
 void Server::cmdKick(Client &client, std::stringstream &msg) {
 	std::string			channel;
 	std::string			user;
-	std::string			arg;
+	std::string			reason;
 
-	// Pas de zinz ici, la ça full getline
 	std::getline(msg, channel, ' ');
 	std::getline(msg, user, ' ');
-	std::getline(msg, arg);
+	std::getline(msg, reason);
 
 	if (channel.empty() || channel[0] != '#' || user.empty()) {
 		sendMessage(client.getUserFd(), ERR_NEEDMOREPARAMS(client.getNickname(), channel));
@@ -44,6 +43,6 @@ void Server::cmdKick(Client &client, std::stringstream &msg) {
 		sendMessage(client.getUserFd(), ERR_CHANOPRIVSNEEDED(client.getNickname(), channel));
 		return ;
 	}
+	sendMessage(getFdByNickname(user), RPL_KICK(client.getNickname(), channel, user, reason));
 	it->second.eraseUser(user);
-	sendMessage(getFdByNickname(user), RPL_KICK(user, channel, client.getNickname()));
 }
