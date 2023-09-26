@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:19:09 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/26 09:23:22 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/26 10:18:55 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,4 +55,6 @@ void Server::cmdKick(Client &client, std::stringstream &msg) {
 	}
 	it->second.sendMessageToAllMembers(RPL_KICK(client.getNickname(), channel, user, reason), "");
 	it->second.eraseUser(user);
+	if (it->second.getUserCount() == 0)
+		eraseChannel(it);
 }
