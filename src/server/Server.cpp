@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:06 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/26 11:34:43 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/26 13:51:28 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,15 +124,21 @@ void	Server::listenClient(Client &client, int fd) {
 			throw Server::EpollControlException();
 
 		std::map<std::string, Channel>::iterator it = channels.begin();
-		for (; it != channels.end(); it++)
+		std::map<std::string, Channel>::iterator tmp;
+		while (it != channels.end())
 		{
 			if (it->second.isUserMember(client.getNickname()))
 				it->second.eraseUser(client.getNickname());
-			if (it->second.getUserCount() == 0)
-				eraseChannel(it);
+			if (it->second.getUserCount() == 0) {
+				tmp = it;
+				it++;
+				channels.erase(tmp);
+			}
+			else
+				it++;
 		}
-		this->clientsList.erase(fd);
 		close(fd);
+		this->clientsList.erase(fd);
 	}
 	else
 		handleClientMsg(client, parsed_msg);
@@ -154,12 +160,18 @@ void	Server::initEpoll(struct epoll_event &serverEvents) {
 void	Server::cmdQuit(Client & client, std::stringstream &msg) {
 	(void)msg;
 	std::map<std::string, Channel>::iterator it = channels.begin();
-	for (; it != channels.end(); it++)
+	std::map<std::string, Channel>::iterator tmp;
+	while (it != channels.end())
 	{
 		if (it->second.isUserMember(client.getNickname()))
 			it->second.eraseUser(client.getNickname());
-		if (it->second.getUserCount() == 0)
-			eraseChannel(it);
+		if (it->second.getUserCount() == 0) {
+			tmp = it;
+			it++;
+			channels.erase(tmp);
+		}
+		else
+			it++;
 	}
 	close(client.getUserFd());
 	this->clientsList.erase(client.getUserFd());

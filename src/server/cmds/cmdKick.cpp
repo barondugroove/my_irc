@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:19:09 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/26 11:53:12 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/26 12:51:44 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,15 @@ void Server::cmdKick(Client &client, std::stringstream &msg) {
 	if (user[0] == ':')
 		user.erase(user.begin());
 
+
+	//NEED MORE PARAMS
 	if (channel.empty() || channel[0] != '#' || user.empty()) {
 		sendMessage(client.getUserFd(), ERR_NEEDMOREPARAMS(client.getNickname(), channel));
 		return ;
 	}
 
+
+	//CHANNEL DOES NOT EXIST
 	std::map<std::string, Channel>::iterator it = channels.find(channel);
 	if (it == channels.end()) {
 		sendMessage(client.getUserFd(), ERR_NOSUCHCHANNEL(client.getNickname(), channel));
@@ -36,14 +40,14 @@ void Server::cmdKick(Client &client, std::stringstream &msg) {
 	}
 
 	//USER NOT ON THE CHANNEL
-	if (!it->second.isUserMember(user)) {
+	if (!it->second.isUserMember(client.getNickname())) {
 		sendMessage(client.getUserFd(), ERR_NOTONCHANNEL(client.getNickname(), channel));
 		return ;
 	}
 
-	//USER NOT ON THE CHANNEL
+	//TARGET NOT ON THE CHANNEL
 	if (!it->second.isUserMember(user)) {
-		sendMessage(client.getUserFd(), ERR_NOTONCHANNEL(client.getNickname(), channel));
+		sendMessage(client.getUserFd(), ERR_NOTONCHANNEL(user, channel));
 		return ;
 	}
 
