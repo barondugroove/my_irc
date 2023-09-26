@@ -132,6 +132,10 @@ void	Channel::setTopic(std::string topic) {
 	_topic = topic;
 }
 
+void	Channel::clearTopic() {
+	_topic.clear();
+}
+
 void	Channel::setChannelPass(std::string password) {
 	_password = password;
 }

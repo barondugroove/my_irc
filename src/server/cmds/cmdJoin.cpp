@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdJoin.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:14:38 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/26 04:27:17 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/26 08:40:44 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,13 +44,13 @@ void Server::cmdJoin(Client &client, std::stringstream &msg) {
 		sendMessage(client.getUserFd(), ERR_BADCHANNELKEY(client.getNickname(), channelName));
 		return ;
 	}
-	
+
 	if (it->second.getInviteMode() && !it->second.isUserInvited(client.getNickname())) {
 		std::cout << client.getNickname() << " can not join channel " << channelName << std::endl;
 		sendMessage(client.getUserFd(), ERR_INVITEONLYCHAN(client.getNickname(), channelName));
 		return ;
 	}
-	
+
 	if (it->second.isChannelFull()) {
 		std::cout << client.getNickname() << " can not join channel " << channelName << std::endl;
 		sendMessage(client.getUserFd(), ERR_CHANNELISFULL(client.getNickname(), channelName));

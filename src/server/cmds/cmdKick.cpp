@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:19:09 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/26 05:43:10 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/26 09:02:41 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,9 @@ void Server::cmdKick(Client &client, std::stringstream &msg) {
 	msg.ignore(512, ' ');
 	std::getline(msg, user, ' ');
 	std::getline(msg, reason);
-	
+
 	if (user[0] == ':')
 		user.erase(user.begin());
-	std::cout << "channel is : "<< channel << " user is : " << user << " reason is " << reason << std::endl;
 
 	if (channel.empty() || channel[0] != '#' || user.empty()) {
 		sendMessage(client.getUserFd(), ERR_NEEDMOREPARAMS(client.getNickname(), channel));
@@ -38,8 +37,14 @@ void Server::cmdKick(Client &client, std::stringstream &msg) {
 	}
 
 	//USER NOT ON THE CHANNEL
-	if (!it->second.isUserMember(client.getNickname())) {
+	if (!it->second.isUserMember(user)) {
 		sendMessage(client.getUserFd(), ERR_NOTONCHANNEL(client.getNickname(), channel));
+		return ;
+	}
+
+	//CANT KICK YOURSELF
+	if (client.getNickname() == user) {
+		sendMessage(client.getUserFd(), ERR_CANNOTKICKYSLF(client.getNickname(), channel));
 		return ;
 	}
 

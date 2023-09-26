@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:06 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/26 04:26:17 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/26 08:11:01 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ void	exitProgram(int signal) {
 }
 
 void Server::sendMessage(const int &fd, std::string msg) {
-	std::cout << "message to client fd[" << fd << "] : " << msg; 
+	std::cout << "message to client fd[" << fd << "] : " << msg;
 	send(fd, msg.c_str(), msg.size(), 0);
 }
 
@@ -230,14 +230,20 @@ Server::Server(unsigned short port, std::string password) : _port(port), _passwo
 	serverAddr.sin_port = htons(_port);
 
 	// BINDING SOCKET ADDR
-	if (bind(_serverSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0)
+	if (bind(_serverSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0) {
+		close(_serverSocket);
 		throw Server::CantListenOnPortException();
+	}
 
-	if (setsockopt(_serverSocket, SOL_SOCKET, SO_REUSEPORT, &option, sizeof(option)) < 0)
+	if (setsockopt(_serverSocket, SOL_SOCKET, SO_REUSEPORT, &option, sizeof(option)) < 0) {
+		close(_serverSocket);
 		throw Server::CantListenOnPortException();
+	}
 
-	if (listen(_serverSocket, serverAddr.sin_port) < 0)
+	if (listen(_serverSocket, serverAddr.sin_port) < 0) {
+		close(_serverSocket);
 		throw Server::CantListenOnPortException();
+	}
 
 	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("JOIN", &Server::cmdJoin));
 	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("PART", &Server::cmdPart));

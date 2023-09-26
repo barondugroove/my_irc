@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/29 14:26:42 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/25 23:49:15 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/26 08:17:57 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,9 @@ class Channel {
 		void		setUserLimit(int userLimit);
 		void		setPassMode(bool status);
 
+
+		void		clearTopic();
+
 		bool		isChannelFull();
 		bool		isUserMember(std::string &nickName);
 		bool		isUserInvited(std::string &nickName);
@@ -65,7 +68,7 @@ class Channel {
 		std::map<std::string, Client*>	_members;
 		std::vector<std::string>		_operator;
 		std::vector<std::string>		_invitees;
-		
+
 		bool							_inviteMode;
 		bool							_topicMode;
 		bool							_passwordMode;

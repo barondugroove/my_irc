@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 17:10:03 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/26 05:16:17 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/26 09:02:17 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@
 #define ERR_BADCHANNELKEY(client, channel) (": 475 " + client + " " + channel + " :Cannot join channel (+k)\r\n")
 #define ERR_USERNOTINCHANNEL(client, nick, channel) (": 441 " + client + " " + nick + " " + channel + " :They aren't on that channel\r\n")
 #define ERR_CANNOTSENDTOCHAN(client, channel) (": 404 " + client + " " + channel + " :Cannot send to channel\r\n")
+#define ERR_CANNOTKICKYSLF(client, channel) (": 404 " + client + " " + channel + " :Cannot kick yourself\r\n")
 #define ERR_USERONCHANNEL(client, nick, channel) (": 303 " + client + " " + nick + " " + channel + " :is already on channel\r\n")
 #define ERR_PASSWDMISMATCH(client) (": 464 " + client + " :Password incorrect\r\n")
 #define ERR_UMODEUNKNOWNFLAG(client) (": 501 " + client + " :Unknown MODE flag\r\n")
@@ -50,8 +51,8 @@
 #define RPL_MODE(client, channel, mode) (":" + client + " MODE " + channel + " " + mode + "\r\n")
 #define RPL_CHANNELMODEIS(client, channel, mode) (": 324 " + client + " MODE " + channel + " " + mode + "\r\n")
 #define RPL_KICK(client, channel, target, reason) (":" + client + " KICK " + channel + " " + target + " :" + reason + "\r\n")
-#define RPL_TOPIC(client, channel, topic) (": 332" + client + " " + channel + " :" + topic + "\r\n")
-#define RPL_NOTOPIC(client, channel) (":" + client + " " + channel + " :No topic is set\r\n")
+#define RPL_TOPIC(client, channel, topic) (": 332 " + client + " " + channel + " :" + topic + "\r\n")
+#define RPL_NOTOPIC(client, channel) (": 331 " + client + " " + channel + " :No topic is set\r\n")
 #define RPL_INVITESNDR(client, invitee, channel) (": 341 " + client + " " + invitee + " " + channel + "\r\n")
 #define RPL_INVITERCVR(client, invitee, channel) (":" + client + " INVITE " + invitee + " " + channel + "\r\n")
 #define RPL_NICK(oldNick, newNick) (":" + oldNick + " NICK " + newNick + "\r\n")
