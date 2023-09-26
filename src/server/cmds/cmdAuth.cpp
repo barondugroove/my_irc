@@ -6,7 +6,7 @@
 /*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:19:31 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/26 02:09:16 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/26 04:27:41 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,8 @@ void Server::cmdUser(Client &unauthClient, std::stringstream &msg) {
 		sendMessage(unauthClient.getUserFd(), "Requesting the new username " + username + "\n");
 		if (unauthClient.getPassword() == _password && !unauthClient.getNickname().empty()) {
 			unauthClient.setAuth(true);
-			sendMessage(unauthClient.getUserFd(), unauthClient.getNickname() + " :is now authentified\n");
+			
+			sendMessage(unauthClient.getUserFd(), RPL_WELCOME(unauthClient.getNickname()));
 		}
 		else {
 			unauthClient.clearInfo();

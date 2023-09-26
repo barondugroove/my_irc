@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdJoin.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:14:38 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/26 00:16:25 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/26 04:27:17 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,5 @@ void Server::cmdJoin(Client &client, std::stringstream &msg) {
 	std::cout << client.getNickname() << " is joining channel " << channelName << std::endl;
 	it->second.addUser(client.getNickname(), client);
 	sendMessage(client.getUserFd(), RPL_JOIN(client.getNickname(), client.getUsername(), channelName));
-	sendMessage(client.getUserFd(), RPL_WELCOME(client.getNickname(), channelName));
 	it->second.sendMessageToAllMembers(RPL_JOIN(client.getNickname(), client.getUsername(), channelName), client.getNickname());
 }
