@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdPrivmsg.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:17:37 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/26 09:33:36 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/26 09:54:21 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,13 +49,13 @@ void Server::cmdPrivMsg(Client &client, std::stringstream &msg) {
 			sendMessage(client.getUserFd(), ERR_NOTONCHANNEL(client.getNickname(), name));
 			return ;
 		}
-		it->second.sendMessageToAllMembers(CHANNEL_MESSAGES(client.getUsername() +'!'+ client.getNickname(), name, text), client.getNickname());
+		it->second.sendMessageToAllMembers(CHANNEL_MESSAGES(client.getNickname(), name, text), client.getNickname());
 	}
 	else {
 		int fd = getFdByNickname(name);
 		std::map<int, Client>::iterator it = clientsList.find(fd);
 		if (it != clientsList.end())
-			sendMessage(it->second.getUserFd(), USER_MESSAGES(client.getUsername() +'!'+ client.getNickname(), name, text));
+			sendMessage(it->second.getUserFd(), USER_MESSAGES(client.getNickname(), name, text));
 		else
 			sendMessage(client.getUserFd(), ERR_NOSUCHNICK(client.getNickname(), name));
 	}

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   define.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 17:10:03 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/26 09:32:53 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/26 09:54:56 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@
 #define RPL_JOIN(nick, user, channel) (":" + nick + "!" + user + " JOIN " + channel + "\n")
 #define RPL_WELCOME(client) (": 001 " + client + " :Welcome in the IRC world, " + client + "\r\n")
 #define RPL_PART(client, channel) (":" + client + " PART " + channel + "\r\n")
-#define RPL_MODE(client, channel, mode) (":" + client + " MODE " + channel + " " + mode + "\r\n")
+#define RPL_MODE(client, channel, mode, name) (":" + client + " MODE " + channel + " " + mode + " " + name + "\r\n")
 #define RPL_CHANNELMODEIS(client, channel, mode) (": 324 " + client + " MODE " + channel + " " + mode + "\r\n")
 #define RPL_KICK(client, channel, target, reason) (":" + client + " KICK " + channel + " " + target + " :" + reason + "\r\n")
 #define RPL_TOPIC(client, channel, topic) (": 332 " + client + " " + channel + " :" + topic + "\r\n")

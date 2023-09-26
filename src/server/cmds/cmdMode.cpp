@@ -6,7 +6,7 @@
 /*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 18:15:01 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/26 03:59:14 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/26 09:41:51 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void Server::modeI(Channel &channel, Client &client, char mode, std::string arg)
 	else
 		channel.setInviteMode(false);
 
-	sendMessage(client.getUserFd(), RPL_MODE(client.getNickname(), channel.getChannelName(), mode + 'i'));
+	sendMessage(client.getUserFd(), RPL_MODE(client.getNickname(), channel.getChannelName(), mode + 'i', ""));
 	return ;
 }
 
@@ -46,7 +46,7 @@ void Server::modeT(Channel &channel, Client &client, char mode, std::string arg)
 		channel.setTopic("");
 		channel.setTopicMode(false);
 	}
-	sendMessage(client.getUserFd(), RPL_MODE(client.getNickname(), channel.getChannelName(), mode + 't'));
+	sendMessage(client.getUserFd(), RPL_MODE(client.getNickname(), channel.getChannelName(), mode + 't', ""));
 	return ;
 }
 
@@ -68,21 +68,21 @@ void Server::modeK(Channel &channel, Client &client, char mode, std::string arg)
 		channel.setPassMode(false);
 		channel.setChannelPass("");
 	}
-	sendMessage(client.getUserFd(), RPL_MODE(client.getNickname(), channel.getChannelName(), mode + 'k'));
+	sendMessage(client.getUserFd(), RPL_MODE(client.getNickname(), channel.getChannelName(), mode + 'k', ""));
 	return ;
 }
 
-void Server::modeO(Channel &channel, Client &client, char mode, std::string arg) {
+void Server::modeO(Channel &channel, Client &client, char mode, std::string name) {
 
 	if (mode == '+')
-		channel.addOperator(arg);
+		channel.addOperator(name);
 	else
-		channel.eraseOperator(arg);
+		channel.eraseOperator(name);
 	if (channel.getOperatorCount() == 0) {
 		std::map<std::string, Channel>::iterator it = channels.find(channel.getChannelName());
 		eraseChannel(it);
 	}
-	sendMessage(client.getUserFd(), RPL_MODE(client.getNickname(), channel.getChannelName(), mode + 'o'));
+	sendMessage(client.getUserFd(), RPL_MODE(client.getNickname(), channel.getChannelName(), mode + 'o', name));
 	return ;
 }
 
@@ -98,7 +98,7 @@ void Server::modeL(Channel &channel, Client &client, char mode, std::string arg)
 	}
 
 	channel.setUserLimit(userLimit);
-	sendMessage(client.getUserFd(), RPL_MODE(client.getNickname(), channel.getChannelName(), mode + 'l'));
+	sendMessage(client.getUserFd(), RPL_MODE(client.getNickname(), channel.getChannelName(), mode + 'l', ""));
 	return ;
 }
 
