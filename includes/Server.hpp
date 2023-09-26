@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:15 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/25 19:52:06 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/26 03:58:41 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,7 @@ class Server {
 		void			cmdTopic(Client &client, std::stringstream &msg);
 		void			cmdMode(Client &client, std::stringstream &msg);
 
-		void			printModes(int fd, Channel channel);
+		void 			printModes(Client &client, Channel channel);
 		void			modeI(Channel &channel, Client &client, char mode, std::string arg);
 		void			modeT(Channel &channel, Client &client, char mode, std::string arg);
 		void			modeK(Channel &channel, Client &client, char mode, std::string arg);

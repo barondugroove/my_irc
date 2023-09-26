@@ -6,24 +6,23 @@
 /*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 18:15:01 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/25 22:55:01 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/26 03:59:14 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/Server.hpp"
 
-void Server::printModes(int fd, Channel channel) {
-	std::string msg = "Active modes : ";
+void Server::printModes(Client &client, Channel channel) {
+	std::string modes = "+";
 
 	if(channel.getInviteMode())
-		msg += "Invite ";
+		modes += "i";
 	if(channel.getTopicMode())
-		msg += "Topic ";
+		modes += "t";
 	if(channel.getPassMode())
-		msg += "Password";
+		modes += "k";
 
-	msg += "\r\n";
-	sendMessage(fd, msg);
+	sendMessage(client.getUserFd(), RPL_CHANNELMODEIS(client.getNickname(), channel.getChannelName(), modes));
 }
 
 void Server::modeI(Channel &channel, Client &client, char mode, std::string arg) {
@@ -129,7 +128,7 @@ void Server::cmdMode(Client &client, std::stringstream &msg) {
 
 	//PRINT MODE PARAMS
 	if (mode.empty() && arg.empty()) {
-		printModes(client.getUserFd(), it->second);
+		printModes(client, it->second);
 		return ;
 	}
 
