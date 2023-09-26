@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 17:10:03 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/26 04:40:00 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/26 05:16:17 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,11 +49,11 @@
 #define RPL_PART(client, channel) (":" + client + " PART " + channel + "\r\n")
 #define RPL_MODE(client, channel, mode) (":" + client + " MODE " + channel + " " + mode + "\r\n")
 #define RPL_CHANNELMODEIS(client, channel, mode) (": 324 " + client + " MODE " + channel + " " + mode + "\r\n")
-#define RPL_KICK(client, channel, target, reason)	":" + client + " KICK " + channel + " " + target + " :" + reason
+#define RPL_KICK(client, channel, target, reason) (":" + client + " KICK " + channel + " " + target + " :" + reason + "\r\n")
 #define RPL_TOPIC(client, channel, topic) (": 332" + client + " " + channel + " :" + topic + "\r\n")
 #define RPL_NOTOPIC(client, channel) (":" + client + " " + channel + " :No topic is set\r\n")
 #define RPL_INVITESNDR(client, invitee, channel) (": 341 " + client + " " + invitee + " " + channel + "\r\n")
-#define RPL_INVITERCVR(client, invitee, channel) (": 342 " + client + " " + invitee + " " + channel + "\r\n")
+#define RPL_INVITERCVR(client, invitee, channel) (":" + client + " INVITE " + invitee + " " + channel + "\r\n")
 #define RPL_NICK(oldNick, newNick) (":" + oldNick + " NICK " + newNick + "\r\n")
 
 #endif

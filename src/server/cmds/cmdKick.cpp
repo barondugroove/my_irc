@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:19:09 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/26 04:41:19 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/26 05:43:10 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,13 @@ void Server::cmdKick(Client &client, std::stringstream &msg) {
 	std::string			reason;
 
 	std::getline(msg, channel, ' ');
+	msg.ignore(512, ' ');
 	std::getline(msg, user, ' ');
 	std::getline(msg, reason);
+	
+	if (user[0] == ':')
+		user.erase(user.begin());
+	std::cout << "channel is : "<< channel << " user is : " << user << " reason is " << reason << std::endl;
 
 	if (channel.empty() || channel[0] != '#' || user.empty()) {
 		sendMessage(client.getUserFd(), ERR_NEEDMOREPARAMS(client.getNickname(), channel));
@@ -43,6 +48,6 @@ void Server::cmdKick(Client &client, std::stringstream &msg) {
 		sendMessage(client.getUserFd(), ERR_CHANOPRIVSNEEDED(client.getNickname(), channel));
 		return ;
 	}
-	sendMessage(getFdByNickname(user), RPL_KICK(client.getNickname(), channel, user, reason));
+	it->second.sendMessageToAllMembers(RPL_KICK(client.getNickname(), channel, user, reason), "");
 	it->second.eraseUser(user);
 }

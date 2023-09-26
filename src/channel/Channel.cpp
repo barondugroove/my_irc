@@ -92,8 +92,9 @@ void	Channel::eraseUser(std::string &nickname) {
 		eraseOperator(nickname);
 	if (isUserInvited(nickname))
 		eraseInvitee(nickname);
-	sendMessageToAllMembers(RPL_PART(nickname, _channelName), nickname);
-	_members.erase(_members.find(nickname));
+	std::map<std::string, Client*>::iterator it = _members.find(nickname);
+	if (it != _members.end())
+		_members.erase(_members.find(nickname));
 }
 
 void	Channel::addUser(std::string &nickname, Client &client) {
