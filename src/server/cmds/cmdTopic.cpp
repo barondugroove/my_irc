@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:18:27 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/26 04:06:23 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/26 04:21:40 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void Server::cmdTopic(Client &client, std::stringstream &msg) {
 
 	// ATTENTION, ya pas tout msg en entier qui part dans channel? Genre "TOPIC #toto cul", channel = "#toto cul", text = "cul"
 	// It is chelou my big collaborator, non? Check les genre la fonction kick ya pas de trucs de zinz comme ça
-	msg >> channel;
+	std::getline(msg, channel, ' ');
 	std::getline(msg, text);
 
 	std::map<std::string, Channel>::iterator it = channels.find(channel);
