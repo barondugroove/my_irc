@@ -6,7 +6,7 @@
 /*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:19:31 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/26 04:27:41 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/26 10:44:19 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ void Server::cmdNick(Client &unauthClient, std::stringstream &msg) {
 
 
 	if (!checkName(nickname)) {
-		sendMessage(unauthClient.getUserFd(), ERR_ERRONEUSNAME(unauthClient.getNickname(), nickname, "nickname\n"));
+		sendMessage(unauthClient.getUserFd(), ERR_ERRONEUSNICKNAME(unauthClient.getNickname(), nickname));
 		return ;
 	}
 
@@ -102,7 +102,7 @@ void Server::cmdUser(Client &unauthClient, std::stringstream &msg) {
 	}
 
 	if (!checkName(username)) {
-		sendMessage(unauthClient.getUserFd(), ERR_ERRONEUSNAME(unauthClient.getNickname(), username, "username\n"));
+		sendMessage(unauthClient.getUserFd(), ERR_ERRONEUSNICKNAME(unauthClient.getNickname(), username));
 		return ;
 	}
 

@@ -6,7 +6,7 @@
 /*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 17:10:03 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/26 09:54:56 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/26 10:45:04 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@
 #define ERR_USERONCHANNEL(client, nick, channel) (": 303 " + client + " " + nick + " " + channel + " :is already on channel\r\n")
 #define ERR_PASSWDMISMATCH(client) (": 464 " + client + " :Password incorrect\r\n")
 #define ERR_UMODEUNKNOWNFLAG(client) (": 501 " + client + " :Unknown MODE flag\r\n")
-#define ERR_ERRONEUSNAME(client, nickname, name) (": 432 " + client + " " + nickname + " :Erroneus " + name + "\r\n")
+#define ERR_ERRONEUSNICKNAME(client, nickname) (": 432 " + client + " " + nickname + " :Erroneus nickname\r\n")
 #define ERR_NOTEXTTOSEND(client) (": 412 " + client + " :No text to send\r\n")
 #define ERR_NORECIPIENT(client) (": 411 " + client + " :No recipient given PRIVMSG\r\n")
 
