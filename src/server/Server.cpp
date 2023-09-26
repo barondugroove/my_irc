@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:06 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/26 08:11:01 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/26 09:20:09 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,6 +149,18 @@ void	Server::initEpoll(struct epoll_event &serverEvents) {
 		throw Server::EpollControlException();
 }
 
+void	Server::cmdQuit(Client & client, std::stringstream &msg) {
+	(void)msg;
+	std::map<std::string, Channel>::iterator it = channels.begin();
+	for (; it != channels.end(); it++)
+	{
+		if (it->second.isUserMember(client.getNickname()))
+			it->second.eraseUser(client.getNickname());
+	}
+	close(client.getUserFd());
+	this->clientsList.erase(client.getUserFd());
+}
+
 void	Server::run(int _serverSocket)
 {
 	struct epoll_event	serverEvents;
@@ -255,6 +267,7 @@ Server::Server(unsigned short port, std::string password) : _port(port), _passwo
 	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("PASS", &Server::cmdPass));
 	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("NICK", &Server::cmdNick));
 	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("USER", &Server::cmdUser));
+	commandsChannels.insert(std::pair<std::string, void(Server::*)(Client&, std::stringstream &msg)>("QUIT", &Server::cmdQuit));
 
 	commandsMode.insert(std::pair<char, void(Server::*)(Channel &channel, Client &client, char mode, std::string arg)>('i', &Server::modeI));
 	commandsMode.insert(std::pair<char, void(Server::*)(Channel &channel, Client &client, char mode, std::string arg)>('t', &Server::modeT));

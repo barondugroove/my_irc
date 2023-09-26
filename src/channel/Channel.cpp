@@ -94,7 +94,7 @@ void	Channel::eraseUser(std::string &nickname) {
 		eraseInvitee(nickname);
 	std::map<std::string, Client*>::iterator it = _members.find(nickname);
 	if (it != _members.end())
-		_members.erase(_members.find(nickname));
+		_members.erase(it);
 }
 
 void	Channel::addUser(std::string &nickname, Client &client) {
@@ -115,17 +115,15 @@ void	Channel::addInvitee(std::string &nickname) {
 }
 
 void	Channel::eraseOperator(std::string &nickname) {
-	for (std::vector<std::string>::iterator it = _operator.begin(); it != _operator.end(); it++) {
-		if (*it == nickname)
+	std::vector<std::string>::iterator it = std::find(_operator.begin(), _operator.end(), nickname);
+	if (it != _operator.end())
 			_operator.erase(it);
-	}
 }
 
 void	Channel::eraseInvitee(std::string &nickname) {
-	for (std::vector<std::string>::iterator it = _invitees.begin(); it != _invitees.end(); it++) {
-		if (*it == nickname)
+	std::vector<std::string>::iterator it = std::find(_invitees.begin(), _invitees.end(), nickname);
+	if (it != _invitees.end())
 			_invitees.erase(it);
-	}
 }
 
 void	Channel::setTopic(std::string topic) {

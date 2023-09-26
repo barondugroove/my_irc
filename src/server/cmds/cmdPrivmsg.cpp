@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:17:37 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/26 00:42:23 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/26 09:33:36 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void Server::cmdPrivMsg(Client &client, std::stringstream &msg) {
 	std::string			name;
 	std::string			text;
 
-	
+
 	std::getline(msg, name, ' ');
 	std::getline(msg, text);
 
@@ -36,7 +36,7 @@ void Server::cmdPrivMsg(Client &client, std::stringstream &msg) {
 
 	if (text.empty()) {
 		sendMessage(client.getUserFd(), ERR_NOTEXTTOSEND(client.getNickname()));
-		return ;	
+		return ;
 	}
 
 	if (name[0] == '#') {
@@ -47,7 +47,7 @@ void Server::cmdPrivMsg(Client &client, std::stringstream &msg) {
 		}
 		if (!it->second.isUserMember(client.getNickname())) {
 			sendMessage(client.getUserFd(), ERR_NOTONCHANNEL(client.getNickname(), name));
-			return ;	
+			return ;
 		}
 		it->second.sendMessageToAllMembers(CHANNEL_MESSAGES(client.getUsername() +'!'+ client.getNickname(), name, text), client.getNickname());
 	}
@@ -57,6 +57,6 @@ void Server::cmdPrivMsg(Client &client, std::stringstream &msg) {
 		if (it != clientsList.end())
 			sendMessage(it->second.getUserFd(), USER_MESSAGES(client.getUsername() +'!'+ client.getNickname(), name, text));
 		else
-			sendMessage(client.getUserFd(), ERR_ERRONEUSNAME(client.getNickname(), name, "nickname"));
+			sendMessage(client.getUserFd(), ERR_NOSUCHNICK(client.getNickname(), name));
 	}
 }

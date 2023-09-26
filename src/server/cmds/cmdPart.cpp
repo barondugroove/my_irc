@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdPart.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:17:57 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/25 22:59:22 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/26 09:23:34 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,9 @@ void Server::cmdPart(Client &client, std::stringstream &msg) {
 		sendMessage(client.getUserFd(), ERR_NORECIPIENT(client.getNickname()));
 		return ;
 	}
-	
+
 	std::map<std::string, Channel>::iterator it = channels.find(channel);
-	
+
 	// CHANNEL DOES NOT EXIST
 	if (it == channels.end()) {
 		sendMessage(client.getUserFd(), ERR_NOSUCHCHANNEL(client.getNickname(), channel));
@@ -41,5 +41,4 @@ void Server::cmdPart(Client &client, std::stringstream &msg) {
 	sendMessage(client.getUserFd(), RPL_PART(client.getNickname(), it->first));
 	if (it->second.getUserCount() == 0)
 		eraseChannel(it);
-		
 }

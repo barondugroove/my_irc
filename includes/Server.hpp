@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 20:22:15 by rlaforge          #+#    #+#             */
-/*   Updated: 2023/09/26 03:58:41 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/26 09:20:33 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,7 @@ class Server {
 		int				getFdByNickname(std::string &nickname);
 		void			cmdUser(Client &unauthClient, std::stringstream &msg);
 
+		void			cmdQuit(Client &client, std::stringstream &msg);
 		void			cmdJoin(Client &client, std::stringstream &msg);
 		void			cmdPart(Client &client, std::stringstream &msg);
 		void			cmdPrivMsg(Client &client, std::stringstream &msg);
