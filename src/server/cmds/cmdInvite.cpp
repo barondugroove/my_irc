@@ -6,7 +6,7 @@
 /*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:15:57 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/25 19:33:18 by bchabot          ###   ########.fr       */
+/*   Updated: 2023/09/26 04:20:37 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@ void Server::cmdInvite(Client &client, std::stringstream &msg) {
 	std::string		channel;
 	std::string		user;
 
-	msg >> channel;
-	msg >> user;
+	std::getline(msg, channel, ' ');
+	std::getline(msg, user);
 
 	if (channel.empty() || channel[0] != '#' || user.empty()) {
 		sendMessage(client.getUserFd(), ERR_NEEDMOREPARAMS(client.getNickname(), channel));
@@ -30,7 +30,7 @@ void Server::cmdInvite(Client &client, std::stringstream &msg) {
 		return ;
 	}
 	
-	if (!itChannel->second.isUserMember(user)) {
+	if (itChannel->second.isUserMember(user)) {
 		sendMessage(client.getUserFd(), ERR_USERONCHANNEL(client.getNickname(), user, channel));
 		return ;
 	}

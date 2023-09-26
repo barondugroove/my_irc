@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   define.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 17:10:03 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/26 03:55:29 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/26 04:14:27 by bchabot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,8 +50,8 @@
 #define RPL_MODE(client, channel, mode) (":" + client + " MODE " + channel + " " + mode + "\r\n")
 #define RPL_CHANNELMODEIS(client, channel, mode) (": 324 " + client + " MODE " + channel + " " + mode + "\r\n")
 #define RPL_KICK(target, channel, client) ("["+ target + "] You were kicked from " + channel + " by " + client + "\r\n")
-#define RPL_TOPIC(client, channel, topic) (":" + client + " TOPIC " + channel + ": " + topic + "\r\n")
-#define RPL_NOTOPIC(client, channel) (client + " " + channel + " :No topic is set\r\n")
+#define RPL_TOPIC(client, channel, topic) (":" + client + " TOPIC " + channel + " :" + topic + "\r\n")
+#define RPL_NOTOPIC(client, channel) (": 331 " + client + " " + channel + " :No topic is set\r\n")
 #define RPL_INVITESNDR(client, invitee, channel) (":" + client + " " + invitee + " " + channel + "\r\n")
 #define RPL_INVITERCVR(client, invitee, channel) (":" + client + " INVITE " + invitee + " :" + channel + "\r\n")
 #define RPL_NICK(oldNick, newNick) (":" + oldNick + " NICK " + newNick + "\r\n")
