@@ -6,7 +6,7 @@
 /*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 16:19:31 by bchabot           #+#    #+#             */
-/*   Updated: 2023/09/26 01:32:53 by rlaforge         ###   ########.fr       */
+/*   Updated: 2023/09/26 02:09:16 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,28 +71,16 @@ void Server::cmdNick(Client &unauthClient, std::stringstream &msg) {
 		return ;
 	}
 
-
-
-
-
-
-
-
-
-
 	if (!unauthClient.isAuth()) {
 		sendMessage(unauthClient.getUserFd(), RPL_NICK(unauthClient.getNickname(), nickname));
 		unauthClient.setNickname(nickname);
 	}
+	/*
 	else {
 		sendMessage(unauthClient.getUserFd(), unauthClient.getNickname() + " changed his nickname to " + nickname);
 		unauthClient.setNickname(nickname);
 	}
-	//BESOIN D'ENLEVER LE ELSE JE PENSE
-
-
-
-
+	*/
 }
 
 void Server::cmdUser(Client &unauthClient, std::stringstream &msg) {
