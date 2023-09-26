@@ -3,14 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   define.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchabot <bchabot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rlaforge <rlaforge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 17:10:03 by bchabot           #+#    #+#             */
-<<<<<<< Updated upstream
-/*   Updated: 2023/09/26 04:14:27 by bchabot          ###   ########.fr       */
-=======
-/*   Updated: 2023/09/26 04:29:10 by rlaforge         ###   ########.fr       */
->>>>>>> Stashed changes
+/*   Updated: 2023/09/26 04:35:45 by rlaforge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
